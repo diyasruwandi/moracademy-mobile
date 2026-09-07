@@ -49,10 +49,10 @@ class UserModel {
   static UserModel dummy() {
     return UserModel(
       id: '1',
-      nama: 'Muhammad Nanda Ferdianto',
-      nomorPeserta: 'MDN2309989',
+      nama: 'Yanto Zuckerberg',
+      nomorPeserta: 'MDN2704032',
       status: 'Magang S1/D4',
-      email: 'nanda@example.com',
+      email: 'yantomullet@example.com',
       telepon: '081234567890',
       bergabungSejak: '17 Juli 1945',
     );

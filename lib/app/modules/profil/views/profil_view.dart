@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/moracademy_logo.dart';
 import '../controllers/profil_controller.dart';
 
 class ProfilView extends GetView<ProfilController> {
@@ -139,15 +141,35 @@ class ProfilView extends GetView<ProfilController> {
               ),
               const SizedBox(height: 24),
               // Detail fields
-              _detailField('Nama Lengkap', user.nama),
-              const SizedBox(height: 12),
-              _detailField('Nomor Telepon', user.telepon),
-              const SizedBox(height: 12),
-              _detailField('Email', user.email),
-              const SizedBox(height: 12),
-              _detailField('-', ''),
-              const SizedBox(height: 12),
-              _detailField('-', ''),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.08,
+                        child: SvgPicture.asset(
+                          moracademyLogoAsset,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      _detailField('Nama Lengkap', user.nama),
+                      const SizedBox(height: 12),
+                      _detailField('Nomor Telepon', user.telepon),
+                      const SizedBox(height: 12),
+                      _detailField('Email', user.email),
+                      const SizedBox(height: 12),
+                      _detailField('-', ''),
+                      const SizedBox(height: 12),
+                      _detailField('-', ''),
+                    ],
+                  ),
+                ],
+              ),
             ],
           );
         }),
@@ -184,7 +206,7 @@ class ProfilView extends GetView<ProfilController> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: 0.86),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
@@ -218,8 +240,7 @@ class ProfilView extends GetView<ProfilController> {
 class _WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.fill;
+    final paint = Paint()..style = PaintingStyle.fill;
 
     // Dark wave
     paint.color = const Color(0xFF1A237E).withValues(alpha: 0.5);

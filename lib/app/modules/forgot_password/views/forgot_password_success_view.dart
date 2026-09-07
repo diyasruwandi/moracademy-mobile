@@ -48,11 +48,6 @@ class ForgotPasswordSuccessView extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Text(
-                'Create By IDI Bantul',
-                style: TextStyle(color: AppColors.textHint, fontSize: 12),
-              ),
-              const SizedBox(height: 16),
             ],
           ),
         ),

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import 'package:moracademy_mobile/app/routes/app_pages.dart';
 import '../controllers/presensi_controller.dart';
 
 class VerifikasiView extends GetView<PresensiController> {
@@ -15,7 +19,7 @@ class VerifikasiView extends GetView<PresensiController> {
       appBar: const CustomAppBar(title: 'Presensi'),
       body: Column(
         children: [
-          // Map area placeholder
+          // Live device location map
           Expanded(
             flex: 3,
             child: Container(
@@ -24,58 +28,11 @@ class VerifikasiView extends GetView<PresensiController> {
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Map grid lines placeholder
-                  CustomPaint(
-                    size: const Size(double.infinity, double.infinity),
-                    painter: _MapPlaceholderPainter(),
-                  ),
-                  // Blue circle radius
-                  Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.4),
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  // Location pin
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.business,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      CustomPaint(
-                        size: const Size(12, 8),
-                        painter: _PinPointerPainter(),
-                      ),
-                    ],
-                  ),
-                ],
+              clipBehavior: Clip.antiAlias,
+              child: Obx(
+                () => controller.currentPosition.value == null
+                    ? _locationState()
+                    : _buildLocationMap(controller.currentPosition.value!),
               ),
             ),
           ),
@@ -101,10 +58,12 @@ class VerifikasiView extends GetView<PresensiController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _verificationItem(
-                    Icons.check_circle,
-                    'Titik Lokasi ditemukan',
-                    true,
+                  Obx(
+                    () => _verificationItem(
+                      Icons.location_on,
+                      controller.locationMessage.value,
+                      controller.isLocationVerified.value,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _verificationItem(
@@ -113,10 +72,14 @@ class VerifikasiView extends GetView<PresensiController> {
                     true,
                   ),
                   const SizedBox(height: 12),
-                  _verificationItem(
-                    Icons.check_circle,
-                    'Radius lokasi valid (Dalam Jangkauan Kantor)',
-                    true,
+                  Obx(
+                    () => _verificationItem(
+                      Icons.my_location,
+                      controller.isRadiusValid.value
+                          ? 'Akurasi GPS memadai untuk presensi'
+                          : 'Akurasi GPS belum memadai (maks. 50 m)',
+                      controller.isRadiusValid.value,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   const Center(
@@ -133,29 +96,35 @@ class VerifikasiView extends GetView<PresensiController> {
                   // Presensi Masuk button
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final result = await ConfirmationDialog.show(
-                          context,
-                          message: 'Anda akan melakukan presensi masuk?',
-                        );
-                        if (result == true) {
-                          controller.presensiMasuk();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    child: Obx(
+                      () => ElevatedButton(
+                        onPressed: controller.isAllVerified.value
+                            ? () async {
+                                final result = await ConfirmationDialog.show(
+                                  context,
+                                  message:
+                                      'Anda akan melakukan presensi masuk?',
+                                );
+                                if (result == true) {
+                                  controller.resetScanner();
+                                  Get.toNamed(Routes.PRESENSI);
+                                }
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Presensi masuk',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                        child: const Text(
+                          'Presensi masuk',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -194,6 +163,76 @@ class VerifikasiView extends GetView<PresensiController> {
     );
   }
 
+  Widget _buildLocationMap(Position position) {
+    final userLocation = LatLng(position.latitude, position.longitude);
+    return FlutterMap(
+      options: MapOptions(
+        initialCenter: userLocation,
+        initialZoom: 17,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.moracademy.mobile',
+        ),
+        CircleLayer(
+          circles: [
+            CircleMarker(
+              point: userLocation,
+              radius: 45,
+              useRadiusInMeter: true,
+              color: AppColors.primary.withValues(alpha: 0.16),
+              borderColor: AppColors.primary,
+              borderStrokeWidth: 2,
+            ),
+          ],
+        ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              point: userLocation,
+              width: 52,
+              height: 52,
+              child: const Icon(
+                Icons.location_pin,
+                color: AppColors.primary,
+                size: 48,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _locationState() {
+    final isLoading = controller.isLocationLoading.value;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isLoading) const CircularProgressIndicator(),
+          if (isLoading) const SizedBox(height: 12),
+          Icon(
+            isLoading ? Icons.gps_fixed : Icons.location_off,
+            color: AppColors.primary,
+            size: 32,
+          ),
+          const SizedBox(height: 12),
+          Text(controller.locationMessage.value),
+          if (!isLoading) ...[
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: controller.loadCurrentLocation,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Coba lagi'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _verificationItem(IconData icon, String text, bool verified) {
     return Row(
       children: [
@@ -215,44 +254,4 @@ class VerifikasiView extends GetView<PresensiController> {
       ],
     );
   }
-}
-
-class _MapPlaceholderPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey.shade300
-      ..strokeWidth = 0.5
-      ..style = PaintingStyle.stroke;
-
-    // Grid lines
-    for (double i = 0; i < size.width; i += 40) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    for (double i = 0; i < size.height; i += 40) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _PinPointerPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.primary
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(0, 0);
-    path.lineTo(size.width, 0);
-    path.lineTo(size.width / 2, size.height);
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

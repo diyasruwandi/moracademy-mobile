@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/confirmation_dialog.dart';
+import '../../../../core/widgets/app_menu_button.dart';
+import '../../../../core/widgets/moracademy_logo.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
@@ -40,101 +42,69 @@ class HomeView extends GetView<HomeController> {
   Widget _buildHeader() {
     return Row(
       children: [
-        // Avatar
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.primary.withValues(alpha: 0.1),
-            border: Border.all(color: AppColors.primary, width: 2),
-          ),
-          child: Center(
-            child: CustomPaint(
-              size: const Size(24, 24),
-              painter: _MiniLogoPainter(),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        // Name and status
         Expanded(
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: GestureDetector(
+            onTap: () => Get.toNamed(Routes.PROFIL),
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    const Text(
-                      'MORACADEMY',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${controller.user.value.nama} • Magang',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    border: Border.all(color: AppColors.primary, width: 2),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: Center(
+                    child: SvgPicture.asset(
+                      moracademyLogoAsset,
+                      width: 30,
+                      height: 30,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
-                Text(
-                  'D3 / S1',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Obx(
+                    () => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'MORACADEMY',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${controller.user.value.nama} • Magang',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const Text(
+                          'D3 / S1',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         ),
-        // Menu button
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          onSelected: (value) async {
-            switch (value) {
-              case 'profil':
-                Get.toNamed(Routes.PROFIL);
-                break;
-              case 'bantuan':
-                Get.toNamed(Routes.BANTUAN);
-                break;
-              case 'tentang':
-                Get.toNamed(Routes.TENTANG);
-                break;
-              case 'logout':
-                final result = await ConfirmationDialog.show(
-                  Get.context!,
-                  message: 'Apakah anda yakin ingin keluar?',
-                );
-                if (result == true) {
-                  Get.offAllNamed(Routes.LOGIN);
-                }
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(value: 'profil', child: Text('Profil')),
-            const PopupMenuItem(value: 'bantuan', child: Text('Bantuan')),
-            const PopupMenuItem(value: 'tentang', child: Text('Tentang')),
-            const PopupMenuItem(
-              value: 'logout',
-              child: Text('Logout', style: TextStyle(color: AppColors.error)),
-            ),
-          ],
-        ),
+        const AppMenuButton(),
       ],
     );
   }
@@ -216,7 +186,8 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(width: 10),
             Text(
               '$v $label',
-              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+              style:
+                  const TextStyle(fontSize: 13, color: AppColors.textPrimary),
             ),
           ],
         );
@@ -407,61 +378,4 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-}
-
-class _MiniLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.primary
-      ..style = PaintingStyle.fill;
-
-    final w = size.width;
-    final h = size.height;
-
-    final path = Path();
-    path.moveTo(w * 0.05, h * 0.95);
-    path.lineTo(w * 0.05, h * 0.25);
-    path.lineTo(w * 0.2, h * 0.25);
-    path.lineTo(w * 0.2, h * 0.95);
-    path.close();
-    canvas.drawPath(path, paint);
-
-    final path2 = Path();
-    path2.moveTo(w * 0.05, h * 0.25);
-    path2.lineTo(w * 0.5, h * 0.0);
-    path2.lineTo(w * 0.5, h * 0.2);
-    path2.lineTo(w * 0.2, h * 0.35);
-    path2.close();
-    canvas.drawPath(path2, paint);
-
-    final path3 = Path();
-    path3.moveTo(w * 0.95, h * 0.25);
-    path3.lineTo(w * 0.5, h * 0.0);
-    path3.lineTo(w * 0.5, h * 0.2);
-    path3.lineTo(w * 0.8, h * 0.35);
-    path3.close();
-    canvas.drawPath(path3, paint);
-
-    final path4 = Path();
-    path4.moveTo(w * 0.8, h * 0.25);
-    path4.lineTo(w * 0.95, h * 0.25);
-    path4.lineTo(w * 0.95, h * 0.95);
-    path4.lineTo(w * 0.8, h * 0.95);
-    path4.close();
-    canvas.drawPath(path4, paint);
-
-    final path5 = Path();
-    path5.moveTo(w * 0.3, h * 0.45);
-    path5.lineTo(w * 0.5, h * 0.7);
-    path5.lineTo(w * 0.7, h * 0.45);
-    path5.lineTo(w * 0.6, h * 0.45);
-    path5.lineTo(w * 0.5, h * 0.58);
-    path5.lineTo(w * 0.4, h * 0.45);
-    path5.close();
-    canvas.drawPath(path5, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -23,19 +23,47 @@ class RiwayatController extends GetxController {
     selectedTab.value = index;
   }
 
-  String getStatusEmoji(String status) {
-    switch (status) {
-      case 'tepat_waktu':
-        return '😊';
-      case 'terlambat':
-        return '😐';
-      case 'tidak_presensi':
-        return '😡';
-      case 'izin':
-        return '😐';
-      default:
-        return '😊';
+  String getStatusEmoji(PresensiModel presensi) {
+    if (presensi.tipe == 'IZIN' || presensi.status == 'izin') {
+      return '😐';
     }
+
+    if (presensi.jamMasuk == '--:--' || presensi.status == 'tidak_presensi') {
+      return '😢';
+    }
+
+    final timeParts = presensi.jamMasuk.split(':');
+    if (timeParts.length == 2) {
+      final hour = int.tryParse(timeParts[0]);
+      final minute = int.tryParse(timeParts[1]);
+      if (hour != null && minute != null) {
+        final minutesAfterMidnight = hour * 60 + minute;
+        return minutesAfterMidnight > (8 * 60) ? '😢' : '😊';
+      }
+    }
+
+    return '😢';
+  }
+
+  String getStatusMood(PresensiModel presensi) {
+    if (presensi.tipe == 'IZIN' || presensi.status == 'izin') {
+      return 'neutral';
+    }
+
+    if (presensi.jamMasuk == '--:--' || presensi.status == 'tidak_presensi') {
+      return 'sad';
+    }
+
+    final timeParts = presensi.jamMasuk.split(':');
+    if (timeParts.length == 2) {
+      final hour = int.tryParse(timeParts[0]);
+      final minute = int.tryParse(timeParts[1]);
+      if (hour != null && minute != null) {
+        return hour * 60 + minute > (8 * 60) ? 'sad' : 'happy';
+      }
+    }
+
+    return 'sad';
   }
 
   Color getStatusColor(String status) {

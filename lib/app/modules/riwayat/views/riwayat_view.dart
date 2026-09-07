@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/app_menu_button.dart';
 import '../../../../models/presensi_model.dart';
+import '../../main_nav/controllers/main_nav_controller.dart';
 import '../controllers/riwayat_controller.dart';
 
 class RiwayatView extends GetView<RiwayatController> {
@@ -16,7 +18,13 @@ class RiwayatView extends GetView<RiwayatController> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            if (Get.isRegistered<MainNavController>()) {
+              Get.find<MainNavController>().changePage(0);
+            } else {
+              Get.back();
+            }
+          },
         ),
         title: const Text(
           'Riwayat Presensi',
@@ -27,13 +35,7 @@ class RiwayatView extends GetView<RiwayatController> {
           ),
         ),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            itemBuilder: (context) => [],
-          ),
+          const AppMenuButton(),
         ],
       ),
       body: Column(
@@ -169,20 +171,22 @@ class RiwayatView extends GetView<RiwayatController> {
       ),
       child: Row(
         children: [
-          // Emoji avatar
+          // Status face
           Container(
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: controller
-                  .getStatusColor(presensi.status)
-                  .withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+              color: controller.getStatusMood(presensi) == 'sad'
+                  ? const Color(0xFFF44336)
+                  : const Color(0xFF57C7B4),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: Text(
-                controller.getStatusEmoji(presensi.status),
-                style: const TextStyle(fontSize: 22),
+              child: CustomPaint(
+                size: const Size(25, 25),
+                painter: _StatusFacePainter(
+                  mood: controller.getStatusMood(presensi),
+                ),
               ),
             ),
           ),
@@ -263,4 +267,77 @@ class RiwayatView extends GetView<RiwayatController> {
       ],
     );
   }
+}
+
+class _StatusFacePainter extends CustomPainter {
+  final String mood;
+
+  _StatusFacePainter({required this.mood});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    final face = Rect.fromLTWH(2, 2, size.width - 4, size.height - 4);
+
+    canvas.drawCircle(face.center, face.width / 2, paint);
+
+    final eyeY = size.height * 0.42;
+    if (mood == 'sad') {
+      canvas.drawCircle(Offset(size.width * 0.35, eyeY), 1.2, paint);
+      canvas.drawCircle(Offset(size.width * 0.65, eyeY), 1.2, paint);
+      final mouth = Path()
+        ..moveTo(size.width * 0.34, size.height * 0.70)
+        ..quadraticBezierTo(
+          size.width * 0.50,
+          size.height * 0.57,
+          size.width * 0.66,
+          size.height * 0.70,
+        );
+      canvas.drawPath(mouth, paint);
+    } else if (mood == 'neutral') {
+      canvas.drawCircle(Offset(size.width * 0.35, eyeY), 1, paint);
+      canvas.drawCircle(Offset(size.width * 0.65, eyeY), 1, paint);
+      canvas.drawLine(
+        Offset(size.width * 0.35, size.height * 0.68),
+        Offset(size.width * 0.65, size.height * 0.68),
+        paint,
+      );
+    } else {
+      final leftEye = Path()
+        ..moveTo(size.width * 0.27, eyeY + 1)
+        ..quadraticBezierTo(
+          size.width * 0.35,
+          eyeY - 3,
+          size.width * 0.43,
+          eyeY + 1,
+        );
+      final rightEye = Path()
+        ..moveTo(size.width * 0.57, eyeY + 1)
+        ..quadraticBezierTo(
+          size.width * 0.65,
+          eyeY - 3,
+          size.width * 0.73,
+          eyeY + 1,
+        );
+      canvas.drawPath(leftEye, paint);
+      canvas.drawPath(rightEye, paint);
+      final mouth = Path()
+        ..moveTo(size.width * 0.32, size.height * 0.60)
+        ..quadraticBezierTo(
+          size.width * 0.50,
+          size.height * 0.82,
+          size.width * 0.68,
+          size.height * 0.60,
+        );
+      canvas.drawPath(mouth, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _StatusFacePainter oldDelegate) =>
+      oldDelegate.mood != mood;
 }

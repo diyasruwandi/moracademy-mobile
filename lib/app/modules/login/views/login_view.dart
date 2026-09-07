@@ -108,10 +108,9 @@ class LoginView extends GetView<LoginController> {
                     // Login button
                     Obx(
                       () => ElevatedButton(
-                        onPressed:
-                            controller.isLoading.value
-                                ? null
-                                : controller.login,
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : controller.login,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
@@ -121,23 +120,22 @@ class LoginView extends GetView<LoginController> {
                           ),
                           elevation: 0,
                         ),
-                        child:
-                            controller.isLoading.value
-                                ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                                : const Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
                                 ),
+                              )
+                            : const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -173,15 +171,6 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 40),
-              // Footer
-              const Text(
-                'Create By IDI Bantul',
-                style: TextStyle(
-                  color: AppColors.textHint,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 16),
             ],
           ),
         ),

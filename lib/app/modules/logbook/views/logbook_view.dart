@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/app_menu_button.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
+import '../../main_nav/controllers/main_nav_controller.dart';
 import '../controllers/logbook_controller.dart';
 
 class LogbookView extends GetView<LogbookController> {
@@ -16,7 +18,13 @@ class LogbookView extends GetView<LogbookController> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            if (Get.isRegistered<MainNavController>()) {
+              Get.find<MainNavController>().changePage(0);
+            } else {
+              Get.back();
+            }
+          },
         ),
         title: const Text(
           'Daily Logbook',
@@ -27,13 +35,7 @@ class LogbookView extends GetView<LogbookController> {
           ),
         ),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            itemBuilder: (context) => [],
-          ),
+          const AppMenuButton(),
         ],
       ),
       body: Column(
@@ -70,8 +72,7 @@ class LogbookView extends GetView<LogbookController> {
                 itemCount: controller.logbookList.length,
                 itemBuilder: (context, index) {
                   final logbook = controller.logbookList[index];
-                  final isLast =
-                      index == controller.logbookList.length - 1;
+                  final isLast = index == controller.logbookList.length - 1;
                   return _buildLogbookItem(logbook, isLast);
                 },
               );

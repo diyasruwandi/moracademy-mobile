@@ -58,10 +58,9 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                     const SizedBox(height: 20),
                     Obx(
                       () => ElevatedButton(
-                        onPressed:
-                            controller.isLoading.value
-                                ? null
-                                : controller.resetPassword,
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : controller.resetPassword,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
@@ -71,23 +70,22 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                           ),
                           elevation: 0,
                         ),
-                        child:
-                            controller.isLoading.value
-                                ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                                : const Text(
-                                  'Reset Password',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
                                 ),
+                              )
+                            : const Text(
+                                'Reset Password',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -117,12 +115,6 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              const Text(
-                'Create By IDI Bantul',
-                style: TextStyle(color: AppColors.textHint, fontSize: 12),
-              ),
-              const SizedBox(height: 16),
             ],
           ),
         ),

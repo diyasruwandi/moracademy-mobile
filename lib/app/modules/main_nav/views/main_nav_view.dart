@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../app/routes/app_pages.dart';
 import '../../home/views/home_view.dart';
 import '../../riwayat/views/riwayat_view.dart';
 import '../../logbook/views/logbook_view.dart';
@@ -19,55 +20,56 @@ class MainNavView extends GetView<MainNavController> {
 
     return Scaffold(
       body: Obx(() => IndexedStack(
-        index: controller.currentIndex.value,
-        children: pages,
-      )),
+            index: controller.currentIndex.value,
+            children: pages,
+          )),
       bottomNavigationBar: Obx(() => Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  // Riwayat
-                  _navItem(
-                    icon: Icons.history,
-                    label: 'Riwayat',
-                    index: 0,
-                    isSelected: controller.currentIndex.value == 0,
-                  ),
-                  // QR Center button
-                  _qrButton(),
-                  // Logbook
-                  _navItem(
-                    icon: Icons.description_outlined,
-                    label: 'Logbook',
-                    index: 2,
-                    isSelected: controller.currentIndex.value == 2,
-                  ),
-                ],
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow,
+                  blurRadius: 20,
+                  offset: const Offset(0, -4),
+                ),
+              ],
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
             ),
-          ),
-        ),
-      )),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      // Riwayat
+                      _navItem(
+                        icon: Icons.history,
+                        label: 'Riwayat',
+                        index: 1,
+                        isSelected: controller.currentIndex.value == 1,
+                      ),
+                      // QR Center button
+                      _qrButton(),
+                      // Logbook
+                      _navItem(
+                        icon: Icons.description_outlined,
+                        label: 'Logbook',
+                        index: 2,
+                        isSelected: controller.currentIndex.value == 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )),
     );
   }
 
@@ -82,9 +84,7 @@ class MainNavView extends GetView<MainNavController> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : Colors.transparent,
+          color: isSelected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(
@@ -114,7 +114,7 @@ class MainNavView extends GetView<MainNavController> {
 
   Widget _qrButton() {
     return GestureDetector(
-      onTap: () => controller.changePage(1),
+      onTap: () => Get.toNamed(Routes.VERIFIKASI),
       child: Container(
         width: 56,
         height: 56,

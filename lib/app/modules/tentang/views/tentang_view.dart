@@ -39,14 +39,6 @@ class TentangView extends StatelessWidget {
                 color: AppColors.textHint,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Create By IDI Bantul',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textHint,
-              ),
-            ),
           ],
         ),
       ),

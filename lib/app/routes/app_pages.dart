@@ -97,6 +97,7 @@ class AppPages {
     GetPage(
       name: _Paths.VERIFIKASI,
       page: () => const VerifikasiView(),
+      binding: PresensiBinding(),
     ),
     GetPage(
       name: _Paths.RIWAYAT,
