@@ -150,97 +150,98 @@ class VerifikasiView extends GetView<PresensiController> {
                   // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk
                   SizedBox(
                     width: double.infinity,
-                    child: Obx(() {
-                      final canMasuk = controller.isAllVerified.value &&
-                          !controller.hasMasuk.value &&
-                          !controller.isCheckingToday.value;
 
-                      return ElevatedButton(
-                        onPressed: canMasuk
-                            ? () async {
-                                final result = await ConfirmationDialog.show(
-                                  context,
-                                  message:
-                                      'Anda akan melakukan presensi masuk?',
-                                );
-                                if (result == true) {
-                                  controller.resetScanner();
-                                  Get.toNamed(Routes.PRESENSI);
+                    child: Obx(
+                      () {
+                        final sudahMasuk = controller.hasMasuk.value;
+                        final canMasuk =
+                            controller.isAllVerified.value && !sudahMasuk;
+
+                        return ElevatedButton(
+                          onPressed: canMasuk
+                              ? () async {
+                                  final result = await ConfirmationDialog.show(
+                                    context,
+                                    message:
+                                        'Anda akan melakukan presensi masuk?',
+                                  );
+                                  if (result == true) {
+                                    controller.resetScanner();
+                                    Get.toNamed(Routes.PRESENSI);
+                                  }
                                 }
-                              }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: controller.hasMasuk.value
-                              ? Colors.green.shade300
-                              : Colors.grey.shade400,
-                          disabledForegroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.grey.shade300,
+                            disabledForegroundColor: Colors.grey.shade600,
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          controller.hasMasuk.value
-                              ? '✓ Sudah presensi masuk (${controller.jamMasuk.value ?? ""})'
-                              : 'Presensi masuk',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                          child: Text(
+                            sudahMasuk
+                                ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
+                                : 'Presensi masuk',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: 8),
-
-                  // Tombol Presensi Pulang — aktif hanya jika sudah masuk DAN belum pulang
+                  // Presensi Pulang button
                   SizedBox(
                     width: double.infinity,
-                    child: Obx(() {
-                      final canPulang = controller.isAllVerified.value &&
-                          controller.hasMasuk.value &&
-                          !controller.hasPulang.value &&
-                          !controller.isCheckingToday.value;
+                    child: Obx(
+                      () {
+                        final sudahMasuk = controller.hasMasuk.value;
+                        final sudahPulang = controller.hasPulang.value;
+                        final canPulang = controller.isAllVerified.value &&
+                            sudahMasuk &&
+                            !sudahPulang;
 
-                      return ElevatedButton(
-                        onPressed: canPulang
-                            ? () async {
-                                final result = await ConfirmationDialog.show(
-                                  context,
-                                  message:
-                                      'Anda akan melakukan presensi pulang?',
-                                );
-                                if (result == true) {
-                                  controller.resetScanner();
-                                  Get.toNamed(Routes.PRESENSI);
+                        return ElevatedButton(
+                          onPressed: canPulang
+                              ? () async {
+                                  final result = await ConfirmationDialog.show(
+                                    context,
+                                    message:
+                                        'Anda akan melakukan presensi pulang?',
+                                  );
+                                  if (result == true) {
+                                    controller.resetScanner();
+                                    Get.toNamed(Routes.PRESENSI);
+                                  }
                                 }
-                              }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade600,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: controller.hasPulang.value
-                              ? Colors.orange.shade300
-                              : Colors.grey.shade400,
-                          disabledForegroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.grey.shade300,
+                            disabledForegroundColor: Colors.grey.shade600,
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          controller.hasPulang.value
-                              ? '✓ Sudah presensi pulang (${controller.jamPulang.value ?? ""})'
-                              : 'Presensi pulang',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                          child: Text(
+                            sudahPulang
+                                ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
+                                : 'Presensi pulang',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                      );
-                    }),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),

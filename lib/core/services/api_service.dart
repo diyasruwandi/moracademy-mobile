@@ -66,26 +66,13 @@ class ApiService extends GetConnect implements GetxService {
     return await post(ApiEndpoints.logout, {});
   }
 
-  // =========================================================================
-  // PRESENSI ENDPOINTS (qr_moracademy)
-  // =========================================================================
-
-  /// Scan QR Code untuk presensi masuk/pulang
-  /// Backend otomatis menentukan apakah ini masuk atau pulang
+  /// Scan QR Code Presensi (dikirim ke QR Moracademy / Port 8001)
   Future<Response> scanPresensi({
     required String qrToken,
     required double latitude,
     required double longitude,
   }) async {
-    final url = ApiEndpoints.qrBaseUrl + ApiEndpoints.presensiScan;
-    final headers = <String, String>{
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true',
-    };
-    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
-      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
-    }
+    final url = '${ApiEndpoints.qrBaseUrl}${ApiEndpoints.presensiScan}';
     return await post(
       url,
       {
@@ -93,22 +80,13 @@ class ApiService extends GetConnect implements GetxService {
         'latitude': latitude,
         'longitude': longitude,
       },
-      headers: headers,
     );
   }
 
-  /// Cek status presensi hari ini (sudah masuk/pulang atau belum)
+  /// Cek status presensi hari ini (dikirim ke QR Moracademy / Port 8001)
   Future<Response> checkTodayPresensi() async {
-    final url = ApiEndpoints.qrBaseUrl + ApiEndpoints.presensiCheckToday;
-    final headers = <String, String>{
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true',
-    };
-    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
-      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
-    }
-    return await get(url, headers: headers);
+    final url = '${ApiEndpoints.qrBaseUrl}${ApiEndpoints.presensiCheckToday}';
+    return await get(url);
   }
 
   /// Helper untuk mengambil pesan error dari response backend

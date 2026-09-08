@@ -23,9 +23,8 @@ class ApiEndpoints {
     return 'http://127.0.0.1:8000/api/v1';
   }
 
-  // =========================================================================
-  // URL Backend QR (qr_moracademy) — untuk Presensi Scan & Check
-  // =========================================================================
+  // URL Server QR Presensi (qr_moracademy - Port 8001)
+  // Anda bisa memasukkan URL Ngrok Port 8001 atau IP lokal Wi-Fi (misal 'http://192.168.1.10:8001/api')
   static const String customQrBaseUrl = '';
 
   static String get qrBaseUrl {
@@ -33,21 +32,23 @@ class ApiEndpoints {
       return customQrBaseUrl;
     }
     if (kIsWeb) {
-      return 'http://127.0.0.1:8001';
+
+      return 'http://127.0.0.1:8001/api';
     }
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8001';
+      return 'http://10.0.2.2:8001/api';
     }
-    return 'http://127.0.0.1:8001';
+    return 'http://127.0.0.1:8001/api';
   }
 
-  // Auth Endpoints (moracademy)
+  // Auth Endpoints (Port 8000 / Backend Utama)
   static const String requestOtp = '/auth/request-otp';
   static const String verifyOtp = '/auth/verify-otp';
   static const String me = '/auth/me';
   static const String logout = '/auth/logout';
 
-  // Presensi Endpoints (qr_moracademy — via routes/api.php, otomatis prefix /api)
-  static const String presensiScan = '/api/presensi/scan';
-  static const String presensiCheckToday = '/api/presensi/check-today';
+
+  // Presensi Endpoints (Port 8001 / QR Moracademy)
+  static const String presensiScan = '/presensi/scan';
+  static const String presensiCheckToday = '/presensi/check-today';
 }

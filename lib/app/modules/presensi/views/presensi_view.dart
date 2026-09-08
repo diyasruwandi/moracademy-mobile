@@ -32,13 +32,13 @@ class PresensiView extends GetView<PresensiController> {
           // Camera scanner
           MobileScanner(
             onDetect: (capture) {
-              final barcode = capture.barcodes.firstWhereOrNull(
-                (b) => b.rawValue != null && b.rawValue!.isNotEmpty,
-              );
-              if (barcode != null) {
-                final qrToken = barcode.rawValue!;
-                // scanAndSubmit sudah handle duplicate call & navigasi back
-                controller.scanAndSubmit(qrToken);
+
+              for (final barcode in capture.barcodes) {
+                final rawValue = barcode.rawValue;
+                if (rawValue != null && rawValue.isNotEmpty) {
+                  controller.scanQrPresensi(rawValue);
+                  break;
+                }
               }
             },
           ),

@@ -13,43 +13,39 @@ class PresensiController extends GetxController {
   final currentPosition = Rxn<Position>();
   final isLocationLoading = false.obs;
   final locationMessage = 'Mencari lokasi perangkat...'.obs;
+  String? scannedQrToken;
 
-  // Status presensi hari ini
+  // Status Presensi Hari Ini
   final hasMasuk = false.obs;
   final hasPulang = false.obs;
-  final jamMasuk = Rxn<String>();
-  final jamPulang = Rxn<String>();
+  final jamMasuk = RxnString();
+  final jamPulang = RxnString();
   final isCheckingToday = false.obs;
 
-  // Token QR yang di-scan
-  String? scannedQrToken;
 
   @override
   void onInit() {
     super.onInit();
     loadCurrentLocation();
-    checkTodayPresensi();
+
+    checkTodayStatus();
   }
 
-  /// Cek status presensi hari ini dari backend
-  Future<void> checkTodayPresensi() async {
+  Future<void> checkTodayStatus() async {
     isCheckingToday.value = true;
     try {
       final response = await ApiService.to.checkTodayPresensi();
-      if (response.isOk &&
-          response.body is Map &&
-          response.body['success'] == true) {
+      if (response.isOk && response.body is Map && response.body['success'] == true) {
         final data = response.body['data'];
         if (data is Map) {
           hasMasuk.value = data['has_masuk'] == true;
           hasPulang.value = data['has_pulang'] == true;
-          jamMasuk.value = data['jam_masuk'];
-          jamPulang.value = data['jam_pulang'];
+
+          jamMasuk.value = data['jam_masuk']?.toString();
+          jamPulang.value = data['jam_pulang']?.toString();
         }
       }
-    } catch (_) {
-      // Gagal cek status, biarkan default (belum presensi)
-    }
+    } catch (_) {}
     isCheckingToday.value = false;
   }
 
@@ -100,51 +96,42 @@ class PresensiController extends GetxController {
     scannedQrToken = null;
   }
 
-  /// Dipanggil setelah QR code berhasil di-scan
-  /// Backend otomatis menentukan: masuk atau pulang
-  Future<void> scanAndSubmit(String qrToken) async {
+  /// Memproses token QR yang di-scan kamera dan kirim ke API QR Moracademy
+  Future<void> scanQrPresensi(String qrToken) async {
     if (isLoading.value || hasScannedQr.value) return;
     hasScannedQr.value = true;
     isLoading.value = true;
-    scannedQrToken = qrToken;
-
-    final position = currentPosition.value;
-    if (position == null) {
-      isLoading.value = false;
-      hasScannedQr.value = false;
-      Get.snackbar(
-        'Gagal',
-        'Lokasi belum tersedia. Silakan coba lagi.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
-      return;
-    }
 
     try {
+      // Pastikan ada posisi GPS
+      Position? position = currentPosition.value;
+      if (position == null) {
+        try {
+          position = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+            ),
+          );
+          currentPosition.value = position;
+        } catch (_) {}
+      }
+
+      final lat = position?.latitude ?? -7.782819;
+      final lng = position?.longitude ?? 110.367082;
+
       final response = await ApiService.to.scanPresensi(
         qrToken: qrToken,
-        latitude: position.latitude,
-        longitude: position.longitude,
+        latitude: lat,
+        longitude: lng,
       );
 
       isLoading.value = false;
 
-      if (response.isOk &&
-          response.body is Map &&
-          response.body['success'] == true) {
-        final message =
-            response.body['message'] ?? 'Presensi berhasil dicatat';
-
-        // Refresh status presensi hari ini
-        await checkTodayPresensi();
-
-        Get.back(); // Kembali dari scanner ke verifikasi
+      if (response.isOk && response.body is Map && response.body['success'] == true) {
+        final message = response.body['message'] ?? 'Presensi berhasil dicatat.';
+        Get.back(); // Tutup scanner kamera
         Get.snackbar(
-          'Berhasil ✅',
+          'Berhasil',
           message,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green.shade100,
@@ -153,12 +140,12 @@ class PresensiController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 4),
         );
+        // Refresh status presensi
+        checkTodayStatus();
       } else {
-        hasScannedQr.value = false;
         final errorMessage = ApiService.getErrorMessage(response);
-        Get.back(); // Kembali dari scanner
         Get.snackbar(
-          'Gagal',
+          'Gagal Presensi',
           errorMessage,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.shade100,
@@ -167,14 +154,17 @@ class PresensiController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 4),
         );
+        // Izinkan scan ulang jika gagal
+        Future.delayed(const Duration(seconds: 2), () {
+          hasScannedQr.value = false;
+        });
       }
     } catch (e) {
       isLoading.value = false;
       hasScannedQr.value = false;
-      Get.back();
       Get.snackbar(
         'Error',
-        'Gagal terhubung ke server: ${e.toString()}',
+        'Gagal memproses presensi: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade800,
