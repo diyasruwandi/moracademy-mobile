@@ -19,10 +19,31 @@ class MainNavView extends GetView<MainNavController> {
     ];
 
     return Scaffold(
-      body: Obx(() => IndexedStack(
-            index: controller.currentIndex.value,
-            children: pages,
-          )),
+      body: Obx(
+        () => AnimatedSwitcher(
+          duration: const Duration(milliseconds: 320),
+          reverseDuration: const Duration(milliseconds: 240),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final offsetAnimation = Tween<Offset>(
+              begin: const Offset(0.04, 0),
+              end: Offset.zero,
+            ).animate(animation);
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              ),
+            );
+          },
+          child: KeyedSubtree(
+            key: ValueKey(controller.currentIndex.value),
+            child: pages[controller.currentIndex.value],
+          ),
+        ),
+      ),
       bottomNavigationBar: Obx(() => Container(
             decoration: BoxDecoration(
               color: Colors.white,

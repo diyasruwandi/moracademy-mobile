@@ -50,7 +50,6 @@ class RiwayatView extends GetView<RiwayatController> {
                 const SizedBox(width: 8),
                 Obx(() => _tabChip('Izin', 1)),
                 const Spacer(),
-                // Month filter
                 Obx(
                   () => Container(
                     padding: const EdgeInsets.symmetric(
@@ -62,23 +61,29 @@ class RiwayatView extends GetView<RiwayatController> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppColors.border),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          controller.selectedMonth.value,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.calendar_today,
-                          size: 14,
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: controller.selectedMonth.value,
+                        isDense: true,
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 18,
                           color: AppColors.textSecondary,
                         ),
-                      ],
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textPrimary,
+                        ),
+                        items: controller.monthOptions.map((month) {
+                          return DropdownMenuItem<String>(
+                            value: month,
+                            child: Text(month),
+                          );
+                        }).toList(),
+                        onChanged: (month) {
+                          if (month != null) controller.selectMonth(month);
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -88,9 +93,7 @@ class RiwayatView extends GetView<RiwayatController> {
           // List
           Expanded(
             child: Obx(() {
-              final list = controller.selectedTab.value == 0
-                  ? controller.presensiList
-                  : controller.izinList;
+              final list = controller.filteredList;
 
               if (list.isEmpty) {
                 return const Center(
@@ -177,8 +180,8 @@ class RiwayatView extends GetView<RiwayatController> {
             height: 44,
             decoration: BoxDecoration(
               color: controller.getStatusMood(presensi) == 'sad'
-                  ? const Color(0xFFF44336)
-                  : const Color(0xFF57C7B4),
+                  ? AppColors.error
+                  : AppColors.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(

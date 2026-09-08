@@ -16,84 +16,16 @@ class InformasiView extends GetView<InformasiController> {
       appBar: const CustomAppBar(title: 'Informasi'),
       body: Column(
         children: [
-          // Search bar
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow,
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchTextController,
-                    decoration: const InputDecoration(
-                      hintText: 'Cari',
-                      hintStyle: TextStyle(
-                        color: AppColors.textHint,
-                        fontSize: 14,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    controller.search(searchTextController.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Cari',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Content area (WebView placeholder)
+          _buildSearchBar(searchTextController),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
+              width: double.infinity,
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadow,
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
                 children: [
-                  // Drag handle
                   Container(
                     margin: const EdgeInsets.only(top: 12),
                     width: 40,
@@ -103,7 +35,6 @@ class InformasiView extends GetView<InformasiController> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  // WebView placeholder content
                   Expanded(
                     child: Obx(() {
                       if (controller.isLoading.value) {
@@ -113,31 +44,147 @@ class InformasiView extends GetView<InformasiController> {
                           ),
                         );
                       }
-                      return const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.web,
-                              size: 48,
-                              color: AppColors.textHint,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Konten informasi akan\nditampilkan di sini',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
+                      final informations = controller.filteredInformations;
+                      if (informations.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Informasi tidak ditemukan',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        );
+                      }
+
+                      return ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                        itemCount: informations.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          return _informationCard(informations[index]);
+                        },
                       );
                     }),
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(TextEditingController searchTextController) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: searchTextController,
+              decoration: const InputDecoration(
+                hintText: 'Cari',
+                hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 44,
+            child: ElevatedButton(
+              onPressed: () => controller.search(searchTextController.text),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Cari',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _informationCard(Map<String, String> information) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  information['category']!,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  information['date']!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    color: AppColors.textHint,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            information['title']!,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            information['detail']!,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              height: 1.4,
             ),
           ),
         ],

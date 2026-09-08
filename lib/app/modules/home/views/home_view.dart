@@ -263,9 +263,12 @@ class HomeView extends GetView<HomeController> {
             child: Text(
               controller.currentDateTime.value,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 13,
+                height: 1.25,
                 color: AppColors.textSecondary,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.right,
             ),
           ),
