@@ -27,15 +27,22 @@ class LoginView extends GetView<LoginController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Phone number field
+                    // Email field
                     TextField(
-                      controller: controller.phoneController,
-                      keyboardType: TextInputType.phone,
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => controller.login(),
                       decoration: InputDecoration(
-                        hintText: 'Nomer telepon',
+                        hintText: 'Email',
                         hintStyle: const TextStyle(
                           color: AppColors.textHint,
                           fontSize: 14,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: AppColors.textHint,
+                          size: 20,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -58,53 +65,15 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    // Password field
-                    Obx(
-                      () => TextField(
-                        controller: controller.passwordController,
-                        obscureText: !controller.isPasswordVisible.value,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: const TextStyle(
-                            color: AppColors.textHint,
-                            fontSize: 14,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                const BorderSide(color: AppColors.border),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                const BorderSide(color: AppColors.border),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.primary,
-                              width: 2,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              controller.isPasswordVisible.value
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: AppColors.textHint,
-                              size: 20,
-                            ),
-                            onPressed: controller.togglePasswordVisibility,
-                          ),
-                        ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Masukkan email terdaftar untuk menerima kode verifikasi OTP.',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     // Login button
                     Obx(
                       () => ElevatedButton(
@@ -130,7 +99,7 @@ class LoginView extends GetView<LoginController> {
                                 ),
                               )
                             : const Text(
-                                'Login',
+                                'Masuk',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -138,30 +107,26 @@ class LoginView extends GetView<LoginController> {
                               ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     // Bottom links
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Buat Akun',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        const Text(
+                          'Kendala saat masuk? ',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
                           ),
                         ),
-                        TextButton(
-                          onPressed: controller.goToForgotPassword,
+                        GestureDetector(
+                          onTap: controller.goToBantuan,
                           child: const Text(
-                            'Lupa password',
+                            'Bantuan',
                             style: TextStyle(
                               color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),

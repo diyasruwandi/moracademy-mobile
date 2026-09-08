@@ -84,17 +84,24 @@ class HomeView extends GetView<HomeController> {
                           '${controller.user.value.nama} • Magang',
                           style: const TextStyle(
                             fontSize: 12,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.textSecondary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const Text(
-                          'D3 / S1',
-                          style: TextStyle(
+                        Text(
+                          controller.user.value.institusi.isNotEmpty
+                              ? controller.user.value.institusi
+                              : (controller.user.value.status.isNotEmpty
+                                  ? controller.user.value.status
+                                  : 'Peserta Magang'),
+                          style: const TextStyle(
                             fontSize: 11,
                             color: AppColors.textSecondary,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

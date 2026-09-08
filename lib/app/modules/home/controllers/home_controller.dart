@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import '../../../../models/user_model.dart';
+import '../../../../core/services/storage_service.dart';
+import '../../../../core/services/api_service.dart';
 
 class HomeController extends GetxController {
-  final user = UserModel.dummy().obs;
+  final user = StorageService.to.getUser().obs;
   final tepatWaktu = 12.obs;
   final terlambat = 1.obs;
   final tidakPresensi = 3.obs;
@@ -18,11 +20,47 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _loadUser();
     _updateDateTime();
     _dateTimeTimer = Timer.periodic(
       const Duration(seconds: 1),
       (_) => _updateDateTime(),
     );
+  }
+
+  void _loadUser() {
+    user.value = StorageService.to.getUser();
+
+    // Listen ke perubahan session user di StorageService
+    ever(StorageService.to.currentUser, (UserModel u) {
+      user.value = u;
+    });
+
+    // Refresh profile dari backend jika sudah ada token
+    if (StorageService.to.isLoggedIn) {
+      _refreshProfileFromApi();
+    }
+  }
+
+  Future<void> _refreshProfileFromApi() async {
+    try {
+      final response = await ApiService.to.getMe();
+      if (response.isOk && response.body is Map && response.body['success'] == true) {
+        final data = response.body['data'];
+        if (data is Map) {
+          final userMap = data['user'] as Map<String, dynamic>?;
+          final pesertaMap = data['peserta'] as Map<String, dynamic>?;
+          final magangMap = data['magang'] as Map<String, dynamic>?;
+
+          StorageService.to.saveAuthSession(
+            authToken: StorageService.to.token.value,
+            user: userMap,
+            peserta: pesertaMap,
+            magang: magangMap,
+          );
+        }
+      }
+    } catch (_) {}
   }
 
   void _updateDateTime() {

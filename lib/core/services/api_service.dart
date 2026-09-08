@@ -1,0 +1,92 @@
+import 'package:get/get.dart';
+import '../constants/api_endpoints.dart';
+import 'storage_service.dart';
+
+class ApiService extends GetConnect implements GetxService {
+  static ApiService get to {
+    if (!Get.isRegistered<ApiService>()) {
+      return Get.put(ApiService(), permanent: true);
+    }
+    return Get.find<ApiService>();
+  }
+
+  @override
+  void onInit() {
+    httpClient.baseUrl = ApiEndpoints.baseUrl;
+    httpClient.timeout = const Duration(seconds: 20);
+
+    // Request Modifier (menambahkan header default dan Bearer token jika ada)
+    httpClient.addRequestModifier<dynamic>((request) {
+      request.headers['Accept'] = 'application/json';
+      request.headers['Content-Type'] = 'application/json';
+      request.headers['ngrok-skip-browser-warning'] = 'true';
+
+      if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
+        request.headers['Authorization'] =
+            'Bearer ${StorageService.to.token.value}';
+      }
+      return request;
+    });
+
+    super.onInit();
+  }
+
+  /// Request OTP 6 digit ke email peserta magang
+  Future<Response> requestOtp(String email) async {
+    return await post(
+      ApiEndpoints.requestOtp,
+      {
+        'email': email,
+      },
+    );
+  }
+
+  /// Verifikasi OTP 6 digit dan dapatkan token Sanctum
+  Future<Response> verifyOtp(String email, String otp) async {
+    return await post(
+      ApiEndpoints.verifyOtp,
+      {
+        'email': email,
+        'otp': otp,
+      },
+    );
+  }
+
+  /// Ambil profil akun magang aktif
+  Future<Response> getMe() async {
+    return await get(ApiEndpoints.me);
+  }
+
+  /// Logout akun dan revoke token
+  Future<Response> logout() async {
+    return await post(ApiEndpoints.logout, {});
+  }
+
+  /// Helper untuk mengambil pesan error dari response backend
+  static String getErrorMessage(Response response) {
+    if (response.status.connectionError) {
+      return 'Gagal terhubung ke server. Pastikan server backend Laravel sedang aktif.';
+    }
+
+    if (response.body is Map && response.body['message'] != null) {
+      return response.body['message'].toString();
+    }
+
+    switch (response.statusCode) {
+      case 400:
+        return 'Permintaan tidak valid atau data tidak sesuai.';
+      case 403:
+        return 'Akses ditolak. Akun Anda tidak memiliki izin.';
+      case 404:
+        return 'Data atau akun tidak ditemukan.';
+      case 422:
+        return 'Data yang dikirimkan tidak valid.';
+      case 429:
+        return 'Terlalu banyak permintaan. Silakan tunggu beberapa saat.';
+      case 500:
+        return 'Terjadi kesalahan pada server backend.';
+      default:
+        return 'Terjadi kesalahan tidak terduga (${response.statusCode ?? 'unknown'}).';
+    }
+  }
+}
