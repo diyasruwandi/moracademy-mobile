@@ -47,7 +47,7 @@ class ApiEndpoints {
   static const String me = '/auth/me';
   static const String logout = '/auth/logout';
 
-  // Presensi Endpoints (qr_moracademy)
-  static const String presensiScan = '/presensi/scan';
-  static const String presensiCheckToday = '/presensi/check-today';
+  // Presensi Endpoints (qr_moracademy — via routes/api.php, otomatis prefix /api)
+  static const String presensiScan = '/api/presensi/scan';
+  static const String presensiCheckToday = '/api/presensi/check-today';
 }
