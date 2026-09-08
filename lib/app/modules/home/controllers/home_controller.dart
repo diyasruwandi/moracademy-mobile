@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import '../../../../models/user_model.dart';
 
@@ -11,11 +13,16 @@ class HomeController extends GetxController {
   final tepatWaktuPercent = 75.obs;
   final notifikasi = 0.obs;
   final currentDateTime = ''.obs;
+  Timer? _dateTimeTimer;
 
   @override
   void onInit() {
     super.onInit();
     _updateDateTime();
+    _dateTimeTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _updateDateTime(),
+    );
   }
 
   void _updateDateTime() {
@@ -49,5 +56,11 @@ class HomeController extends GetxController {
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
     currentDateTime.value =
         '$dayName, ${now.day} $monthName ${now.year} - $time';
+  }
+
+  @override
+  void onClose() {
+    _dateTimeTimer?.cancel();
+    super.onClose();
   }
 }

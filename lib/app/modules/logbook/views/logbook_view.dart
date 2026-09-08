@@ -44,13 +44,13 @@ class LogbookView extends GetView<LogbookController> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Obx(
-              () => Row(
+              () => Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   _filterChip('Minggu Ini', 0),
-                  const SizedBox(width: 8),
                   _filterChip('Bulan Ini', 1),
-                  const SizedBox(width: 8),
-                  _filterChipWithIcon('Custom Range', 2),
+                  _filterChipWithIcon(context, 2),
                 ],
               ),
             ),
@@ -58,10 +58,11 @@ class LogbookView extends GetView<LogbookController> {
           // Logbook timeline
           Expanded(
             child: Obx(() {
-              if (controller.logbookList.isEmpty) {
+              final logbookList = controller.filteredLogbookList;
+              if (logbookList.isEmpty) {
                 return const Center(
                   child: Text(
-                    'Belum ada logbook',
+                    'Belum ada logbook pada rentang ini',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 );
@@ -69,10 +70,10 @@ class LogbookView extends GetView<LogbookController> {
 
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: controller.logbookList.length,
+                itemCount: logbookList.length,
                 itemBuilder: (context, index) {
-                  final logbook = controller.logbookList[index];
-                  final isLast = index == controller.logbookList.length - 1;
+                  final logbook = logbookList[index];
+                  final isLast = index == logbookList.length - 1;
                   return _buildLogbookItem(logbook, isLast);
                 },
               );
@@ -113,10 +114,10 @@ class LogbookView extends GetView<LogbookController> {
     );
   }
 
-  Widget _filterChipWithIcon(String label, int index) {
+  Widget _filterChipWithIcon(BuildContext context, int index) {
     final isActive = controller.selectedFilter.value == index;
     return GestureDetector(
-      onTap: () => controller.switchFilter(index),
+      onTap: () => controller.selectCustomDateRange(context),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
@@ -136,7 +137,7 @@ class LogbookView extends GetView<LogbookController> {
             ),
             const SizedBox(width: 6),
             Text(
-              label,
+              controller.customDateRangeLabel,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
