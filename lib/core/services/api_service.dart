@@ -31,6 +31,10 @@ class ApiService extends GetConnect implements GetxService {
     super.onInit();
   }
 
+  // =========================================================================
+  // AUTH ENDPOINTS (moracademy)
+  // =========================================================================
+
   /// Request OTP 6 digit ke email peserta magang
   Future<Response> requestOtp(String email) async {
     return await post(
@@ -60,6 +64,51 @@ class ApiService extends GetConnect implements GetxService {
   /// Logout akun dan revoke token
   Future<Response> logout() async {
     return await post(ApiEndpoints.logout, {});
+  }
+
+  // =========================================================================
+  // PRESENSI ENDPOINTS (qr_moracademy)
+  // =========================================================================
+
+  /// Scan QR Code untuk presensi masuk/pulang
+  /// Backend otomatis menentukan apakah ini masuk atau pulang
+  Future<Response> scanPresensi({
+    required String qrToken,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final url = ApiEndpoints.qrBaseUrl + ApiEndpoints.presensiScan;
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    };
+    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
+      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
+    }
+    return await post(
+      url,
+      {
+        'qr_token': qrToken,
+        'latitude': latitude,
+        'longitude': longitude,
+      },
+      headers: headers,
+    );
+  }
+
+  /// Cek status presensi hari ini (sudah masuk/pulang atau belum)
+  Future<Response> checkTodayPresensi() async {
+    final url = ApiEndpoints.qrBaseUrl + ApiEndpoints.presensiCheckToday;
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    };
+    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
+      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
+    }
+    return await get(url, headers: headers);
   }
 
   /// Helper untuk mengambil pesan error dari response backend

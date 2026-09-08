@@ -29,14 +29,21 @@ class PresensiView extends GetView<PresensiController> {
       body: Stack(
         fit: StackFit.expand,
         children: [
+          // Camera scanner
           MobileScanner(
             onDetect: (capture) {
-              if (capture.barcodes.any((barcode) => barcode.rawValue != null)) {
-                controller.presensiMasuk();
-                Get.back();
+              final barcode = capture.barcodes.firstWhereOrNull(
+                (b) => b.rawValue != null && b.rawValue!.isNotEmpty,
+              );
+              if (barcode != null) {
+                final qrToken = barcode.rawValue!;
+                // scanAndSubmit sudah handle duplicate call & navigasi back
+                controller.scanAndSubmit(qrToken);
               }
             },
           ),
+
+          // Scan frame overlay
           Center(
             child: Container(
               width: 260,
@@ -47,6 +54,8 @@ class PresensiView extends GetView<PresensiController> {
               ),
             ),
           ),
+
+          // Instruction text
           Positioned(
             left: 24,
             right: 24,
@@ -63,6 +72,32 @@ class PresensiView extends GetView<PresensiController> {
                 style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
+          ),
+
+          // Loading overlay saat mengirim data ke server
+          Obx(
+            () => controller.isLoading.value
+                ? Container(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    child: const Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(color: Colors.white),
+                          SizedBox(height: 16),
+                          Text(
+                            'Memproses presensi...',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),
