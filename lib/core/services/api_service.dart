@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import '../constants/api_endpoints.dart';
 import 'storage_service.dart';
@@ -13,7 +14,9 @@ class ApiService extends GetConnect implements GetxService {
   @override
   void onInit() {
     httpClient.baseUrl = ApiEndpoints.baseUrl;
-    httpClient.timeout = const Duration(seconds: 60); // Diperpanjang agar tidak timeout jika koneksi email lambat
+    httpClient.timeout = const Duration(
+        seconds:
+            60); // Diperpanjang agar tidak timeout jika koneksi email lambat
 
     // Request Modifier (menambahkan header default dan Bearer token jika ada)
     httpClient.addRequestModifier<dynamic>((request) {
@@ -88,6 +91,7 @@ class ApiService extends GetConnect implements GetxService {
         'latitude': latitude,
         'longitude': longitude,
       },
+      headers: headers,
     );
   }
 
@@ -103,6 +107,66 @@ class ApiService extends GetConnect implements GetxService {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
     return await GetConnect().get(url, headers: headers);
+  }
+
+  // =========================================================================
+  // LOGBOOK ENDPOINTS (moracademy)
+  // =========================================================================
+
+  /// Mengambil daftar riwayat logbook milik peserta
+  Future<Response> getLogbooks({
+    String? filter,
+    String? startDate,
+    String? endDate,
+    String? tanggal,
+  }) async {
+    final query = <String, String>{};
+    if (filter != null && filter.isNotEmpty) query['filter'] = filter;
+    if (startDate != null && startDate.isNotEmpty) query['start_date'] = startDate;
+    if (endDate != null && endDate.isNotEmpty) query['end_date'] = endDate;
+    if (tanggal != null && tanggal.isNotEmpty) query['tanggal'] = tanggal;
+
+    return await get(
+      ApiEndpoints.logbook,
+      query: query.isNotEmpty ? query : null,
+    );
+  }
+
+  /// Simpan catatan logbook baru ke backend
+  Future<Response> createLogbook({
+    required String tanggal,
+    required String kategori,
+    required String judul,
+    required String detail,
+    String? lampiranPath,
+  }) async {
+    if (lampiranPath != null && lampiranPath.isNotEmpty) {
+      final file = File(lampiranPath);
+      final filename = lampiranPath.split(Platform.pathSeparator).last;
+      final form = FormData({
+        'tanggal': tanggal,
+        'kategori': kategori,
+        'judul': judul,
+        'detail': detail,
+        'lampiran': MultipartFile(file, filename: filename),
+      });
+      return await post(ApiEndpoints.logbook, form);
+    } else {
+      return await post(
+        ApiEndpoints.logbook,
+        {
+          'tanggal': tanggal,
+          'kategori': kategori,
+          'judul': judul,
+          'detail': detail,
+        },
+      );
+    }
+  }
+
+  /// Hapus catatan logbook
+  Future<Response> deleteLogbook(String id) async {
+    return await delete('${ApiEndpoints.logbook}/$id');
   }
 
   /// Helper untuk mengambil pesan error dari response backend
