@@ -9,11 +9,37 @@ class JadwalController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadJadwal();
+    // Listen to changes in selectedDate and update jadwalList automatically
+    ever(selectedDate, (_) => _generateJadwalForSelectedDate());
+    _generateJadwalForSelectedDate();
   }
 
-  void loadJadwal() {
-    jadwalList.value = [JadwalModel.dummy()];
+  void _generateJadwalForSelectedDate() {
+    final date = selectedDate.value;
+    
+    // Jika hari Minggu (7), anggap libur
+    if (date.weekday == 7) {
+      jadwalList.clear();
+      return;
+    }
+
+    final months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    
+    final formattedDate = '${date.day} ${months[date.month - 1]} ${date.year}';
+
+    // Jika hari Sabtu (6), jadwal bisa berbeda misal setengah hari, atau disamakan dengan hari biasa
+    // Di sini kita samakan dengan hari biasa sebagai contoh (08:00 - 17:00)
+    jadwalList.value = [
+      JadwalModel(
+        tanggal: formattedDate,
+        jamMasuk: '08:00',
+        jamPulang: date.weekday == 6 ? '14:00' : '17:00', // Sabtu pulang lebih cepat sebagai contoh
+        tipe: 'WFO',
+      )
+    ];
   }
 
   void previousMonth() {

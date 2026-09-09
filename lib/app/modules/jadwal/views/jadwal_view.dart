@@ -88,7 +88,7 @@ class JadwalView extends GetView<JadwalController> {
                   .asMap()
                   .entries
                   .map((entry) {
-                    final isWeekend = entry.key >= 5;
+                    final isWeekend = entry.key == 6; // Only Sunday is red
                     return SizedBox(
                       width: 36,
                       child: Text(
@@ -130,7 +130,7 @@ class JadwalView extends GetView<JadwalController> {
       final date = DateTime(month.year, month.month, day);
       final isToday = controller.isToday(date);
       final isSelected = controller.isSelected(date);
-      final isWeekend = date.weekday >= 6;
+      final isWeekend = date.weekday == 7; // Only Sunday is red
 
       currentRow.add(
         GestureDetector(

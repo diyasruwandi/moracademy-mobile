@@ -40,7 +40,7 @@ class ProfilController extends GetxController {
           final pesertaMap = data['peserta'] as Map<String, dynamic>?;
           final magangMap = data['magang'] as Map<String, dynamic>?;
 
-          StorageService.to.saveAuthSession(
+          await StorageService.to.saveAuthSession(
             authToken: StorageService.to.token.value,
             user: userMap,
             peserta: pesertaMap,

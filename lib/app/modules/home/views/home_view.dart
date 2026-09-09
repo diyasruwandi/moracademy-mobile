@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_menu_button.dart';
 import '../../../../core/widgets/moracademy_logo.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -32,7 +33,15 @@ class HomeView extends GetView<HomeController> {
               const SizedBox(height: 20),
               _buildBanner(),
               const SizedBox(height: 16),
-            ],
+            ]
+                .animate(interval: 100.ms)
+                .fade(duration: 400.ms)
+                .slideY(
+                  begin: -0.5,
+                  end: 0,
+                  curve: Curves.easeOut,
+                  duration: 800.ms,
+                ),
           ),
         ),
       ),
@@ -117,9 +126,11 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildAttendanceCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: () => Get.toNamed(Routes.RIWAYAT),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -173,7 +184,7 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _attendanceRow(Color dotColor, String label, RxInt value) {

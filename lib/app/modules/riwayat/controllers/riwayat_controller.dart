@@ -5,7 +5,7 @@ import '../../../../core/services/api_service.dart';
 
 class RiwayatController extends GetxController {
   final selectedTab = 0.obs; // 0 = Presensi, 1 = Izin
-  final selectedMonth = 'Agustus 2026'.obs;
+  final selectedMonth = 'September 2026'.obs;
   final presensiList = <PresensiModel>[].obs;
   final izinList = <PresensiModel>[].obs;
   final monthOptions = [
@@ -28,6 +28,12 @@ class RiwayatController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final now = DateTime.now();
+    final months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    selectedMonth.value = '${months[now.month - 1]} ${now.year}';
     loadData();
   }
 

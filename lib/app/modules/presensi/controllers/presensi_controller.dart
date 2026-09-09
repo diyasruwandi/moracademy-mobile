@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../core/services/api_service.dart';
+import '../../riwayat/controllers/riwayat_controller.dart';
 
 class PresensiController extends GetxController {
   final isLocationVerified = false.obs;
@@ -142,6 +143,11 @@ class PresensiController extends GetxController {
         );
         // Refresh status presensi
         checkTodayStatus();
+        
+        // Refresh riwayat if the controller is active
+        if (Get.isRegistered<RiwayatController>()) {
+          Get.find<RiwayatController>().loadData();
+        }
       } else {
         final errorMessage = ApiService.getErrorMessage(response);
         Get.snackbar(

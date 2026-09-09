@@ -129,7 +129,7 @@ class OtpController extends GetxController {
           final magang = data['magang'] as Map<String, dynamic>?;
 
           if (Get.isRegistered<StorageService>()) {
-            StorageService.to.saveAuthSession(
+            await StorageService.to.saveAuthSession(
               authToken: token,
               user: user,
               peserta: peserta,
