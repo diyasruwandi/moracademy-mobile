@@ -13,7 +13,7 @@ class ApiService extends GetConnect implements GetxService {
   @override
   void onInit() {
     httpClient.baseUrl = ApiEndpoints.baseUrl;
-    httpClient.timeout = const Duration(seconds: 20);
+    httpClient.timeout = const Duration(seconds: 60); // Diperpanjang agar tidak timeout jika koneksi email lambat
 
     // Request Modifier (menambahkan header default dan Bearer token jika ada)
     httpClient.addRequestModifier<dynamic>((request) {
@@ -73,7 +73,15 @@ class ApiService extends GetConnect implements GetxService {
     required double longitude,
   }) async {
     final url = '${ApiEndpoints.qrBaseUrl}${ApiEndpoints.presensiScan}';
-    return await post(
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    };
+    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
+      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
+    }
+    return await GetConnect().post(
       url,
       {
         'qr_token': qrToken,
@@ -86,7 +94,15 @@ class ApiService extends GetConnect implements GetxService {
   /// Cek status presensi hari ini (dikirim ke QR Moracademy / Port 8001)
   Future<Response> checkTodayPresensi() async {
     final url = '${ApiEndpoints.qrBaseUrl}${ApiEndpoints.presensiCheckToday}';
-    return await get(url);
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    };
+    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
+      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
+    }
+    return await GetConnect().get(url, headers: headers);
   }
 
   /// Helper untuk mengambil pesan error dari response backend

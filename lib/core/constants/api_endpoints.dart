@@ -7,20 +7,19 @@ class ApiEndpoints {
   // =========================================================================
   // URL Backend UTAMA (moracademy) — untuk Auth, Profil, dll
   // =========================================================================
-  static const String customBaseUrl =
-      'https://june-chattable-tora.ngrok-free.dev/api/v1';
+  static const String customBaseUrl = '';
 
   static String get baseUrl {
     if (customBaseUrl.isNotEmpty) {
       return customBaseUrl;
     }
     if (kIsWeb) {
-      return 'http://127.0.0.1:8000/api/v1';
+      return 'http://192.168.0.111:8000/api/v1';
     }
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000/api/v1';
+      return 'http://192.168.0.111:8000/api/v1';
     }
-    return 'http://127.0.0.1:8000/api/v1';
+    return 'http://192.168.0.111:8000/api/v1';
   }
 
   // URL Server QR Presensi (qr_moracademy - Port 8001)
@@ -32,13 +31,12 @@ class ApiEndpoints {
       return customQrBaseUrl;
     }
     if (kIsWeb) {
-
-      return 'http://127.0.0.1:8001/api';
+      return 'http://192.168.0.111:8001/api';
     }
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8001/api';
+      return 'http://192.168.0.111:8001/api';
     }
-    return 'http://127.0.0.1:8001/api';
+    return 'http://192.168.0.111:8001/api';
   }
 
   // Auth Endpoints (Port 8000 / Backend Utama)

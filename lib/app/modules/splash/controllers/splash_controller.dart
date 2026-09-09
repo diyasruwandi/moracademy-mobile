@@ -26,8 +26,8 @@ class SplashController extends GetxController {
   Future<void> _validateSession() async {
     try {
       final response = await ApiService.to.getMe();
-      if (!response.isOk || (response.body is Map && response.body['success'] != true)) {
-        // Jika token revoked atau kedaluwarsa, logout otomatis
+      if (response.statusCode == 401 || response.statusCode == 403 || (response.body is Map && response.body['success'] == false)) {
+        // Hanya logout otomatis jika token terbukti revoked/kedaluwarsa (401/403)
         await StorageService.to.clearSession();
         Get.offAllNamed(Routes.LOGIN);
       }
