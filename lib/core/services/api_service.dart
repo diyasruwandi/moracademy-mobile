@@ -88,6 +88,7 @@ class ApiService extends GetConnect implements GetxService {
         'latitude': latitude,
         'longitude': longitude,
       },
+      headers: headers,
     );
   }
 
