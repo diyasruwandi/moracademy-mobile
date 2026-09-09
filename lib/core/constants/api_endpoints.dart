@@ -44,6 +44,7 @@ class ApiEndpoints {
   static const String verifyOtp = '/auth/verify-otp';
   static const String me = '/auth/me';
   static const String logout = '/auth/logout';
+  static const String riwayatPresensi = '/auth/presensi/riwayat';
 
 
   // Presensi Endpoints (Port 8001 / QR Moracademy)
