@@ -95,6 +95,11 @@ class TugasFormController extends GetxController {
 
     try {
       isLoading.value = true;
+      Get.dialog(
+        const Center(child: CircularProgressIndicator(color: Colors.white)),
+        barrierDismissible: false,
+      );
+      
       final pesertaId = StorageService.to.pesertaData.value?['id']?.toString() ?? '';
       
       final formData = FormData({
@@ -118,6 +123,11 @@ class TugasFormController extends GetxController {
       final response = isEdit.value 
           ? await ApiService.to.editTugas(editId, formData)
           : await ApiService.to.addTugas(formData);
+          
+      // Tutup loading dialog
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       
       if (response.isOk && response.body['success'] == true) {
         Get.until((route) => route.settings.name == '/tugas');
@@ -129,6 +139,9 @@ class TugasFormController extends GetxController {
         Get.snackbar('Gagal', ApiService.getErrorMessage(response));
       }
     } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       Get.snackbar('Error', 'Terjadi kesalahan: $e');
     } finally {
       isLoading.value = false;
