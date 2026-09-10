@@ -86,6 +86,11 @@ class ApiService extends GetConnect implements GetxService {
     return await post(ApiEndpoints.tugas, data);
   }
 
+  /// Memperbarui tugas yang sudah ada
+  Future<Response> editTugas(String id, FormData data) async {
+    return await post('${ApiEndpoints.tugas}/update/$id', data);
+  }
+
   /// Scan QR Code Presensi (dikirim ke QR Moracademy / Port 8001)
   Future<Response> scanPresensi({
     required String qrToken,

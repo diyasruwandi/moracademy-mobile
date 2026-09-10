@@ -15,7 +15,9 @@ class TugasFormView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Tambah Tugas'),
+      appBar: CustomAppBar(
+        title: controller.isEdit.value ? 'Edit Tugas' : 'Tambah Tugas',
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -150,6 +150,28 @@ class TugasView extends GetView<TugasController> {
                         height: 1.3,
                       ),
                     ),
+                    // Pemberi & Penerima
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Dari: ${tugas.pemberiTugas.isEmpty ? '-' : tugas.pemberiTugas}',
+                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Ke: ${tugas.penerimaTugas.isEmpty ? '-' : tugas.penerimaTugas}',
+                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 8),
                     // Description
                     Text(
