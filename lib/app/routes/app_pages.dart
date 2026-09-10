@@ -19,6 +19,8 @@ import '../modules/izin/bindings/izin_binding.dart';
 import '../modules/izin/views/izin_view.dart';
 import '../modules/tugas/bindings/tugas_binding.dart';
 import '../modules/tugas/views/tugas_view.dart';
+import '../modules/tugas/views/tugas_form_view.dart';
+import '../modules/tugas/views/tugas_detail_view.dart';
 import '../modules/informasi/bindings/informasi_binding.dart';
 import '../modules/informasi/views/informasi_view.dart';
 import '../modules/presensi/bindings/presensi_binding.dart';
@@ -90,6 +92,14 @@ class AppPages {
       name: _Paths.TUGAS,
       page: () => const TugasView(),
       binding: TugasBinding(),
+    ),
+    GetPage(
+      name: _Paths.TUGAS_FORM,
+      page: () => const TugasFormView(),
+    ),
+    GetPage(
+      name: _Paths.TUGAS_DETAIL,
+      page: () => const TugasDetailView(),
     ),
     GetPage(
       name: _Paths.INFORMASI,

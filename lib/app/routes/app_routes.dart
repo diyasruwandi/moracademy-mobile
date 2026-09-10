@@ -12,6 +12,8 @@ abstract class Routes {
   static const JADWAL = _Paths.JADWAL;
   static const IZIN = _Paths.IZIN;
   static const TUGAS = _Paths.TUGAS;
+  static const TUGAS_FORM = _Paths.TUGAS_FORM;
+  static const TUGAS_DETAIL = _Paths.TUGAS_DETAIL;
   static const INFORMASI = _Paths.INFORMASI;
   static const PRESENSI = _Paths.PRESENSI;
   static const VERIFIKASI = _Paths.VERIFIKASI;
@@ -35,6 +37,8 @@ abstract class _Paths {
   static const JADWAL = '/jadwal';
   static const IZIN = '/izin';
   static const TUGAS = '/tugas';
+  static const TUGAS_FORM = '/tugas-form';
+  static const TUGAS_DETAIL = '/tugas-detail';
   static const INFORMASI = '/informasi';
   static const PRESENSI = '/presensi';
   static const VERIFIKASI = '/verifikasi';

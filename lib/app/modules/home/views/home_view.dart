@@ -126,11 +126,9 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildAttendanceCard() {
-    return GestureDetector(
-      onTap: () => Get.toNamed(Routes.RIWAYAT),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -184,7 +182,7 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
-    ));
+    );
   }
 
   Widget _attendanceRow(Color dotColor, String label, RxInt value) {
@@ -214,15 +212,15 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildStatsRow() {
-    return Row(
+    return Obx(() => Row(
       children: [
-        _statCard('45', 'Sisa Hari'),
+        _statCard('${controller.sisaHari.value}', 'Sisa Hari'),
         const SizedBox(width: 12),
-        _statCard('1', 'Jadwal Hari\nIni'),
+        _statCard('${controller.jadwalHariIni.value}', 'Jadwal Hari\nIni'),
         const SizedBox(width: 12),
-        _statCard('75%', 'Tepat Waktu'),
+        _statCard('${controller.tepatWaktuPercent.value}%', 'Tepat Waktu'),
       ],
-    );
+    ));
   }
 
   Widget _statCard(String value, String label) {
