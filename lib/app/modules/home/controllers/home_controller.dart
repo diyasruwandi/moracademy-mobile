@@ -4,15 +4,16 @@ import 'package:get/get.dart';
 import '../../../../models/user_model.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../models/presensi_model.dart';
 
 class HomeController extends GetxController {
   final user = StorageService.to.getUser().obs;
-  final tepatWaktu = 12.obs;
-  final terlambat = 1.obs;
-  final tidakPresensi = 3.obs;
+  final tepatWaktu = 0.obs;
+  final terlambat = 0.obs;
+  final tidakPresensi = 0.obs;
   final sisaHari = 45.obs;
   final jadwalHariIni = 1.obs;
-  final tepatWaktuPercent = 75.obs;
+  final tepatWaktuPercent = 0.obs;
   final notifikasi = 0.obs;
   final currentDateTime = ''.obs;
   Timer? _dateTimeTimer;
@@ -26,6 +27,45 @@ class HomeController extends GetxController {
       const Duration(seconds: 1),
       (_) => _updateDateTime(),
     );
+    _fetchAttendanceSummary();
+  }
+
+  Future<void> _fetchAttendanceSummary() async {
+    try {
+      final response = await ApiService.to.getRiwayatPresensi();
+      if (response.isOk && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final List<PresensiModel> allData = 
+            data.map((json) => PresensiModel.fromJson(json)).toList();
+
+        // Filter current month
+        final now = DateTime.now();
+        final months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        final currentMonthStr = '${months[now.month - 1]} ${now.year}';
+        
+        final currentMonthData = allData.where((p) => p.tanggal.contains(currentMonthStr)).toList();
+
+        int tepat = 0;
+        int lambat = 0;
+        int tidak = 0;
+
+        for (var p in currentMonthData) {
+          if (p.tipe == 'IZIN' || p.status == 'izin') continue;
+          if (p.status == 'tepat_waktu') tepat++;
+          else if (p.status == 'terlambat') lambat++;
+          else if (p.status == 'tidak_presensi' || p.jamMasuk == '--:--') tidak++;
+        }
+
+        tepatWaktu.value = tepat;
+        terlambat.value = lambat;
+        tidakPresensi.value = tidak;
+
+        int total = tepat + lambat + tidak;
+        if (total > 0) {
+          tepatWaktuPercent.value = ((tepat / total) * 100).round();
+        }
+      }
+    } catch (_) {}
   }
 
   void _loadUser() {
@@ -52,7 +92,7 @@ class HomeController extends GetxController {
           final pesertaMap = data['peserta'] as Map<String, dynamic>?;
           final magangMap = data['magang'] as Map<String, dynamic>?;
 
-          StorageService.to.saveAuthSession(
+          await StorageService.to.saveAuthSession(
             authToken: StorageService.to.token.value,
             user: userMap,
             peserta: pesertaMap,

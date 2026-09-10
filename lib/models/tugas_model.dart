@@ -1,62 +1,46 @@
+import 'package:intl/intl.dart';
+
 class TugasModel {
   final String id;
-  final String dari;
-  final String ke;
   final String judul;
   final String deskripsi;
+  final String tanggalTugas;
+  final String media;
+  final String linkTugas;
+  final String fileLampiran;
+  final String createdAt;
 
   TugasModel({
     required this.id,
-    required this.dari,
-    required this.ke,
     required this.judul,
     required this.deskripsi,
+    required this.tanggalTugas,
+    required this.media,
+    required this.linkTugas,
+    required this.fileLampiran,
+    required this.createdAt,
   });
 
   factory TugasModel.fromJson(Map<String, dynamic> json) {
     return TugasModel(
       id: json['id']?.toString() ?? '',
-      dari: json['dari'] ?? '',
-      ke: json['ke'] ?? '',
       judul: json['judul'] ?? '',
       deskripsi: json['deskripsi'] ?? '',
+      tanggalTugas: _formatDate(json['tanggal_tugas']),
+      media: json['media'] ?? '',
+      linkTugas: json['link_tugas'] ?? '',
+      fileLampiran: json['file_lampiran'] ?? '',
+      createdAt: json['created_at'] ?? '',
     );
   }
 
-  static List<TugasModel> dummyList() {
-    return [
-      TugasModel(
-        id: '1',
-        dari: 'Zidan Rifki',
-        ke: 'Ardiansyah',
-        judul: 'Sql eror saat mengakses data pasien',
-        deskripsi:
-            'Melakukan integrasi API Midtrans untuk proses checkout. Mengalami sedikit...',
-      ),
-      TugasModel(
-        id: '2',
-        dari: 'Zidan Rifki',
-        ke: 'Dion S',
-        judul: 'Sql eror saat mengakses data pasien',
-        deskripsi:
-            'Melakukan integrasi API Midtrans untuk proses checkout. Mengalami sedikit...',
-      ),
-      TugasModel(
-        id: '3',
-        dari: 'Zidan Rifki',
-        ke: 'Nanda Ferdi',
-        judul: 'Sql eror saat mengakses data pasien',
-        deskripsi:
-            'Melakukan integrasi API Midtrans untuk proses checkout. Mengalami sedikit...',
-      ),
-      TugasModel(
-        id: '4',
-        dari: 'Zidan Rifki',
-        ke: 'Diyas R',
-        judul: 'Sql eror saat mengakses data pasien',
-        deskripsi:
-            'Melakukan integrasi API Midtrans untuk proses checkout. Mengalami sedikit...',
-      ),
-    ];
+  static String _formatDate(dynamic dateStr) {
+    if (dateStr == null || dateStr.toString().isEmpty) return '';
+    try {
+      final parsed = DateTime.parse(dateStr.toString());
+      return DateFormat('dd MMMM yyyy').format(parsed);
+    } catch (e) {
+      return dateStr.toString();
+    }
   }
 }

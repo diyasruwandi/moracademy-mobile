@@ -1,10 +1,11 @@
 import 'dart:ui';
 import 'package:get/get.dart';
 import '../../../../models/presensi_model.dart';
+import '../../../../core/services/api_service.dart';
 
 class RiwayatController extends GetxController {
   final selectedTab = 0.obs; // 0 = Presensi, 1 = Izin
-  final selectedMonth = 'Agustus 2026'.obs;
+  final selectedMonth = 'September 2026'.obs;
   final presensiList = <PresensiModel>[].obs;
   final izinList = <PresensiModel>[].obs;
   final monthOptions = [
@@ -22,15 +23,44 @@ class RiwayatController extends GetxController {
     'Desember 2026',
   ];
 
+  final isLoading = false.obs;
+
   @override
   void onInit() {
     super.onInit();
+    final now = DateTime.now();
+    final months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    selectedMonth.value = '${months[now.month - 1]} ${now.year}';
     loadData();
   }
 
-  void loadData() {
-    presensiList.value = PresensiModel.dummyList();
-    izinList.value = PresensiModel.dummyIzinList();
+  Future<void> loadData() async {
+    try {
+      isLoading.value = true;
+      final response = await ApiService.to.getRiwayatPresensi();
+
+      if (response.isOk && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final List<PresensiModel> allData = 
+            data.map((json) => PresensiModel.fromJson(json)).toList();
+
+        // Pisahkan data presensi (WFO/WFH) dan izin
+        presensiList.value = allData.where((p) => p.tipe != 'IZIN').toList();
+        izinList.value = allData.where((p) => p.tipe == 'IZIN').toList();
+      } else {
+        // Fallback jika gagal
+        presensiList.value = [];
+        izinList.value = [];
+        Get.snackbar('Gagal Memuat Riwayat', ApiService.getErrorMessage(response));
+      }
+    } catch (e) {
+      Get.snackbar('Terjadi Kesalahan', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void switchTab(int index) {

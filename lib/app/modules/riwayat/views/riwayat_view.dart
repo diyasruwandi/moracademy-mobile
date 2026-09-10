@@ -95,6 +95,12 @@ class RiwayatView extends GetView<RiwayatController> {
             child: Obx(() {
               final list = controller.filteredList;
 
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                );
+              }
+
               if (list.isEmpty) {
                 return const Center(
                   child: Text(

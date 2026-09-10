@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_menu_button.dart';
 import '../../../../core/widgets/moracademy_logo.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -32,7 +33,15 @@ class HomeView extends GetView<HomeController> {
               const SizedBox(height: 20),
               _buildBanner(),
               const SizedBox(height: 16),
-            ],
+            ]
+                .animate(interval: 100.ms)
+                .fade(duration: 400.ms)
+                .slideY(
+                  begin: -0.5,
+                  end: 0,
+                  curve: Curves.easeOut,
+                  duration: 800.ms,
+                ),
           ),
         ),
       ),
@@ -203,15 +212,15 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildStatsRow() {
-    return Row(
+    return Obx(() => Row(
       children: [
-        _statCard('45', 'Sisa Hari'),
+        _statCard('${controller.sisaHari.value}', 'Sisa Hari'),
         const SizedBox(width: 12),
-        _statCard('1', 'Jadwal Hari\nIni'),
+        _statCard('${controller.jadwalHariIni.value}', 'Jadwal Hari\nIni'),
         const SizedBox(width: 12),
-        _statCard('75%', 'Tepat Waktu'),
+        _statCard('${controller.tepatWaktuPercent.value}%', 'Tepat Waktu'),
       ],
-    );
+    ));
   }
 
   Widget _statCard(String value, String label) {

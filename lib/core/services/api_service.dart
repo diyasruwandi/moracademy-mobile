@@ -69,6 +69,21 @@ class ApiService extends GetConnect implements GetxService {
     return await post(ApiEndpoints.logout, {});
   }
 
+  /// Ambil riwayat presensi user (dari moracademy backend)
+  Future<Response> getRiwayatPresensi() async {
+    return await get(ApiEndpoints.riwayatPresensi);
+  }
+
+  /// Ambil daftar tugas user
+  Future<Response> getTugas() async {
+    return await get(ApiEndpoints.tugas);
+  }
+
+  /// Tambah tugas baru (mendukung upload file_lampiran)
+  Future<Response> addTugas(FormData data) async {
+    return await post(ApiEndpoints.tugas, data);
+  }
+
   /// Scan QR Code Presensi (dikirim ke QR Moracademy / Port 8001)
   Future<Response> scanPresensi({
     required String qrToken,
