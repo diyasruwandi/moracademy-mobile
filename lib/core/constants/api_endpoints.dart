@@ -8,19 +8,19 @@ class ApiEndpoints {
   // URL Backend UTAMA (moracademy) — untuk Auth, Profil, dll
   // =========================================================================
   // Kosongkan string ( '' ) jika ingin menggunakan IP lokal di bawah
-  static const String customBaseUrl = 'https://semisoft-veggie-washstand.ngrok-free.dev/api/v1';
+  static const String customBaseUrl = 'https://june-chattable-tora.ngrok-free.dev/api/v1';
 
   static String get baseUrl {
     if (customBaseUrl.isNotEmpty) {
       return customBaseUrl;
     }
     if (kIsWeb) {
-      return 'http://10.155.134.225:8000/api/v1';
+      return 'http://192.168.1.33:8000/api/v1';
     }
     if (Platform.isAndroid) {
-      return 'http://10.155.134.225:8000/api/v1';
+      return 'http://192.168.1.33:8000/api/v1';
     }
-    return 'http://10.155.134.225:8000/api/v1';
+    return 'http://192.168.1.33:8000/api/v1';
   }
 
   // URL Server QR Presensi (qr_moracademy - Port 8001)
@@ -33,12 +33,12 @@ class ApiEndpoints {
       return customQrBaseUrl;
     }
     if (kIsWeb) {
-      return 'http://10.155.134.225:8001/api';
+      return 'http://192.168.1.33:8001/api';
     }
     if (Platform.isAndroid) {
-      return 'http://10.155.134.225:8001/api';
+      return 'http://192.168.1.33:8001/api';
     }
-    return 'http://10.155.134.225:8001/api';
+    return 'http://192.168.1.33:8001/api';
   }
 
   // Auth Endpoints (Port 8000 / Backend Utama)

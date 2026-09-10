@@ -35,12 +35,12 @@ class HomeView extends GetView<HomeController> {
               const SizedBox(height: 16),
             ]
                 .animate(interval: 100.ms)
-                .fade(duration: 400.ms)
+                .fade(duration: 500.ms)
                 .slideY(
-                  begin: -0.5,
+                  begin: -0.2, // Mulai sedikit dari atas (slide down)
                   end: 0,
-                  curve: Curves.easeOut,
-                  duration: 800.ms,
+                  curve: Curves.easeOutCubic, // Mulus, tanpa bounce
+                  duration: 600.ms,
                 ),
           ),
         ),

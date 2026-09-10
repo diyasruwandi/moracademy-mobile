@@ -99,7 +99,8 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
-    return await GetConnect().post(
+    final qrClient = GetConnect(timeout: const Duration(seconds: 60));
+    return await qrClient.post(
       url,
       {
         'qr_token': qrToken,
@@ -121,7 +122,8 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
-    return await GetConnect().get(url, headers: headers);
+    final qrClient = GetConnect(timeout: const Duration(seconds: 60));
+    return await qrClient.get(url, headers: headers);
   }
 
   // =========================================================================
