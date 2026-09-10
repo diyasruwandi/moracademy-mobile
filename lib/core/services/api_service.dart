@@ -45,6 +45,7 @@ class ApiService extends GetConnect implements GetxService {
       {
         'email': email,
       },
+      contentType: 'application/json',
     );
   }
 
@@ -56,6 +57,7 @@ class ApiService extends GetConnect implements GetxService {
         'email': email,
         'otp': otp,
       },
+      contentType: 'application/json',
     );
   }
 
@@ -177,6 +179,7 @@ class ApiService extends GetConnect implements GetxService {
           'judul': judul,
           'detail': detail,
         },
+        contentType: 'application/json',
       );
     }
   }

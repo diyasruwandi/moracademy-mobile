@@ -8,7 +8,7 @@ class ApiEndpoints {
   // URL Backend UTAMA (moracademy) — untuk Auth, Profil, dll
   // =========================================================================
   // Kosongkan string ( '' ) jika ingin menggunakan IP lokal di bawah
-  static const String customBaseUrl = 'https://june-chattable-tora.ngrok-free.dev/api/v1';
+  static const String customBaseUrl = '';
 
   static String get baseUrl {
     if (customBaseUrl.isNotEmpty) {
@@ -26,7 +26,7 @@ class ApiEndpoints {
   // URL Server QR Presensi (qr_moracademy - Port 8001)
   // Anda bisa memasukkan URL Ngrok Port 8001 atau IP lokal Wi-Fi (misal 'http://192.168.1.10:8001/api')
   // Kosongkan string ( '' ) jika ingin menggunakan IP lokal di bawah
-  static const String customQrBaseUrl = 'https://pretext-update-hatchling.ngrok-free.dev/api';
+  static const String customQrBaseUrl = '';
 
   static String get qrBaseUrl {
     if (customQrBaseUrl.isNotEmpty) {
