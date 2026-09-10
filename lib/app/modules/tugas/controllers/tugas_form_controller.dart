@@ -120,7 +120,7 @@ class TugasFormController extends GetxController {
           : await ApiService.to.addTugas(formData);
       
       if (response.isOk && response.body['success'] == true) {
-        Get.back();
+        Get.until((route) => route.settings.name == '/tugas');
         Get.snackbar('Sukses', isEdit.value ? 'Tugas berhasil diperbarui' : 'Tugas berhasil ditambahkan');
         if (Get.isRegistered<TugasController>()) {
           Get.find<TugasController>().loadTugas();
