@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../controllers/tugas_controller.dart';
 import '../../../../models/tugas_model.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../routes/app_pages.dart';
 
 class TugasDetailView extends GetView<TugasController> {
   const TugasDetailView({super.key});
@@ -29,6 +30,14 @@ class TugasDetailView extends GetView<TugasController> {
             color: AppColors.textPrimary,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: AppColors.primary),
+            onPressed: () {
+              Get.toNamed(Routes.TUGAS_FORM, arguments: tugas);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -156,7 +165,7 @@ class TugasDetailView extends GetView<TugasController> {
               ],
               if (tugas.fileLampiran.isNotEmpty) ...[
                 const Text(
-                  'File Lampiran',
+                  'Lampiran Bukti Kegiatan',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -164,36 +173,36 @@ class TugasDetailView extends GetView<TugasController> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.insert_drive_file, color: AppColors.primary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          tugas.fileLampiran.split('/').last,
-                          style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    tugas.fileLampiran,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.background,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.download, color: AppColors.primary),
-                        onPressed: () async {
-                          // Untuk download/open file
-                          final uri = Uri.parse(tugas.fileLampiran);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri);
-                          }
-                        },
-                      ),
-                    ],
+                        child: Column(
+                          children: [
+                            const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                            const SizedBox(height: 8),
+                            const Text('Gagal memuat gambar', style: TextStyle(color: Colors.grey)),
+                            const SizedBox(height: 4),
+                            Text(
+                              'URL: ${tugas.fileLampiran}',
+                              style: const TextStyle(fontSize: 10, color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

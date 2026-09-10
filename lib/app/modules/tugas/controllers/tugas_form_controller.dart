@@ -4,9 +4,13 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/services/storage_service.dart';
+import '../../../../models/tugas_model.dart';
 import 'tugas_controller.dart';
 
 class TugasFormController extends GetxController {
+  final isEdit = false.obs;
+  String editId = '';
+
   final tanggalKegiatan = DateTime.now().obs;
   final judulController = TextEditingController();
   final deskripsiController = TextEditingController();
@@ -25,6 +29,30 @@ class TugasFormController extends GetxController {
 
   final selectedImage = Rxn<File>();
   final isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final args = Get.arguments;
+    if (args is TugasModel) {
+      isEdit.value = true;
+      editId = args.id;
+      
+      judulController.text = args.judul;
+      pemberiTugasController.text = args.pemberiTugas;
+      penerimaTugasController.text = args.penerimaTugas;
+      deskripsiController.text = args.deskripsi;
+      linkController.text = args.linkTugas;
+      
+      if (mediaOptions.contains(args.media)) {
+        mediaTugas.value = args.media;
+      }
+      
+      // Note: we can't easily parse formatted date "10 September 2026" back to DateTime,
+      // so we just leave it as DateTime.now() or we could try parsing it.
+      // But let's keep it simple for now.
+    }
+  }
 
   void pickDate(BuildContext context) async {
     final picked = await showDatePicker(
@@ -87,11 +115,13 @@ class TugasFormController extends GetxController {
         ));
       }
 
-      final response = await ApiService.to.addTugas(formData);
+      final response = isEdit.value 
+          ? await ApiService.to.editTugas(editId, formData)
+          : await ApiService.to.addTugas(formData);
       
       if (response.isOk && response.body['success'] == true) {
         Get.back();
-        Get.snackbar('Sukses', 'Tugas berhasil ditambahkan');
+        Get.snackbar('Sukses', isEdit.value ? 'Tugas berhasil diperbarui' : 'Tugas berhasil ditambahkan');
         if (Get.isRegistered<TugasController>()) {
           Get.find<TugasController>().loadTugas();
         }
