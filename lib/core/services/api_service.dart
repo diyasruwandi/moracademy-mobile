@@ -21,7 +21,7 @@ class ApiService extends GetConnect implements GetxService {
     // Request Modifier (menambahkan header default dan Bearer token jika ada)
     httpClient.addRequestModifier<dynamic>((request) {
       request.headers['Accept'] = 'application/json';
-      request.headers['Content-Type'] = 'application/json';
+      // Hapus baris Content-Type agar GetConnect otomatis mengatur multipart/form-data untuk FormData
       request.headers['ngrok-skip-browser-warning'] = 'true';
 
       if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
