@@ -283,6 +283,10 @@ class LogbookController extends GetxController {
 
     try {
       isSubmitting.value = true;
+      Get.dialog(
+        const Center(child: CircularProgressIndicator(color: Colors.white)),
+        barrierDismissible: false,
+      );
 
       final response = await ApiService.to.createLogbook(
         tanggal: formattedDate,
@@ -291,6 +295,11 @@ class LogbookController extends GetxController {
         detail: detail,
         lampiranPath: selectedImagePath.value,
       );
+      
+      // Tutup loading dialog
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
 
       if (response.isOk && response.body != null && response.body['success'] == true) {
         // Reset form input
@@ -332,6 +341,9 @@ class LogbookController extends GetxController {
         );
       }
     } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       debugPrint('Exception saat submit logbook: $e');
       Get.snackbar(
         'Terjadi Kesalahan',
