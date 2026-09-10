@@ -49,8 +49,10 @@ class ApiEndpoints {
   static const String riwayatPresensi = '/auth/presensi/riwayat';
   static const String tugas = '/tugas';
 
-
   // Presensi Endpoints (Port 8001 / QR Moracademy)
   static const String presensiScan = '/presensi/scan';
   static const String presensiCheckToday = '/presensi/check-today';
+
+  // Logbook Endpoints (Port 8000 / Backend Utama)
+  static const String logbook = '/logbook';
 }
