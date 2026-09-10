@@ -11,6 +11,9 @@ class TugasFormController extends GetxController {
   final judulController = TextEditingController();
   final deskripsiController = TextEditingController();
   final linkController = TextEditingController();
+  final pemberiTugasController = TextEditingController();
+  final penerimaTugasController = TextEditingController();
+
   final mediaTugas = 'Github'.obs;
   
   final mediaOptions = [
@@ -56,6 +59,11 @@ class TugasFormController extends GetxController {
       Get.snackbar('Error', 'Judul tugas wajib diisi!');
       return;
     }
+    
+    if (pemberiTugasController.text.trim().isEmpty || penerimaTugasController.text.trim().isEmpty) {
+      Get.snackbar('Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
+      return;
+    }
 
     try {
       isLoading.value = true;
@@ -64,6 +72,8 @@ class TugasFormController extends GetxController {
       final formData = FormData({
         'peserta_id': pesertaId,
         'judul': judulController.text.trim(),
+        'pemberi_tugas': pemberiTugasController.text.trim(),
+        'penerima_tugas': penerimaTugasController.text.trim(),
         'deskripsi': deskripsiController.text.trim(),
         'tanggal_tugas': '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}',
         'media': mediaTugas.value,
@@ -98,6 +108,8 @@ class TugasFormController extends GetxController {
   @override
   void onClose() {
     judulController.dispose();
+    pemberiTugasController.dispose();
+    penerimaTugasController.dispose();
     deskripsiController.dispose();
     linkController.dispose();
     super.onClose();

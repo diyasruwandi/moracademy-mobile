@@ -65,6 +65,30 @@ class TugasFormView extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+            // Pemberi Tugas
+            const Text(
+              'Tugas Dari Siapa',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.pemberiTugasController,
+              decoration: _inputDecoration('misal: Bapak Budi (Mentor)'),
+            ),
+            const SizedBox(height: 20),
+
+            // Penerima Tugas
+            const Text(
+              'Tugas Ke Siapa',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller.penerimaTugasController,
+              decoration: _inputDecoration('misal: Tim Frontend'),
+            ),
+            const SizedBox(height: 20),
+
             // Media
             const Text(
               'Media Tugas',

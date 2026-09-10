@@ -97,7 +97,7 @@ class JadwalView extends GetView<JadwalController> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isWeekend ? AppColors.error : AppColors.textSecondary,
+                          color: isWeekend ? AppColors.error : AppColors.textPrimary,
                         ),
                       ),
                     );

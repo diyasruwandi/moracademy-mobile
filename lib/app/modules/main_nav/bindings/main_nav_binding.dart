@@ -8,8 +8,8 @@ class MainNavBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<MainNavController>(() => MainNavController());
-    Get.lazyPut<HomeController>(() => HomeController());
-    Get.lazyPut<RiwayatController>(() => RiwayatController());
-    Get.lazyPut<LogbookController>(() => LogbookController());
+    Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+    Get.lazyPut<RiwayatController>(() => RiwayatController(), fenix: true);
+    Get.lazyPut<LogbookController>(() => LogbookController(), fenix: true);
   }
 }

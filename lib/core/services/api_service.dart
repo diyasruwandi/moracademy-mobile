@@ -21,7 +21,7 @@ class ApiService extends GetConnect implements GetxService {
     // Request Modifier (menambahkan header default dan Bearer token jika ada)
     httpClient.addRequestModifier<dynamic>((request) {
       request.headers['Accept'] = 'application/json';
-      request.headers['Content-Type'] = 'application/json';
+      // Hapus baris Content-Type agar GetConnect otomatis mengatur multipart/form-data untuk FormData
       request.headers['ngrok-skip-browser-warning'] = 'true';
 
       if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
@@ -45,6 +45,7 @@ class ApiService extends GetConnect implements GetxService {
       {
         'email': email,
       },
+      contentType: 'application/json',
     );
   }
 
@@ -56,6 +57,7 @@ class ApiService extends GetConnect implements GetxService {
         'email': email,
         'otp': otp,
       },
+      contentType: 'application/json',
     );
   }
 
@@ -99,7 +101,8 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
-    return await GetConnect().post(
+    final qrClient = GetConnect(timeout: const Duration(seconds: 60));
+    return await qrClient.post(
       url,
       {
         'qr_token': qrToken,
@@ -121,7 +124,8 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
-    return await GetConnect().get(url, headers: headers);
+    final qrClient = GetConnect(timeout: const Duration(seconds: 60));
+    return await qrClient.get(url, headers: headers);
   }
 
   // =========================================================================
@@ -175,6 +179,7 @@ class ApiService extends GetConnect implements GetxService {
           'judul': judul,
           'detail': detail,
         },
+        contentType: 'application/json',
       );
     }
   }
