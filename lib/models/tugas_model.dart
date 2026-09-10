@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 class TugasModel {
   final String id;
   final String judul;
+  final String pemberiTugas;
+  final String penerimaTugas;
   final String deskripsi;
   final String tanggalTugas;
   final String media;
@@ -13,6 +15,8 @@ class TugasModel {
   TugasModel({
     required this.id,
     required this.judul,
+    required this.pemberiTugas,
+    required this.penerimaTugas,
     required this.deskripsi,
     required this.tanggalTugas,
     required this.media,
@@ -25,6 +29,8 @@ class TugasModel {
     return TugasModel(
       id: json['id']?.toString() ?? '',
       judul: json['judul'] ?? '',
+      pemberiTugas: json['pemberi_tugas'] ?? '',
+      penerimaTugas: json['penerima_tugas'] ?? '',
       deskripsi: json['deskripsi'] ?? '',
       tanggalTugas: _formatDate(json['tanggal_tugas']),
       media: json['media'] ?? '',

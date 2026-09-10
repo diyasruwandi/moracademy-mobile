@@ -68,6 +68,41 @@ class TugasDetailView extends GetView<TugasController> {
                   color: AppColors.textPrimary,
                 ),
               ),
+              const SizedBox(height: 12),
+              
+              // Pemberi & Penerima
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Dari:', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+                        const SizedBox(height: 2),
+                        Text(
+                          tugas.pemberiTugas.isEmpty ? '-' : tugas.pemberiTugas,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Ke:', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+                        const SizedBox(height: 2),
+                        Text(
+                          tugas.penerimaTugas.isEmpty ? '-' : tugas.penerimaTugas,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 16),
               // Deskripsi
               const Text(
