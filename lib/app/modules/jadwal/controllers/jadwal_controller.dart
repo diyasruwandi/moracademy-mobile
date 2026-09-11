@@ -17,8 +17,8 @@ class JadwalController extends GetxController {
   void _generateJadwalForSelectedDate() {
     final date = selectedDate.value;
     
-    // Jika hari Minggu (7), anggap libur
-    if (date.weekday == 7) {
+    // Libur jika Sabtu (6), Minggu (7), atau tanggal merah
+    if (date.weekday == 6 || date.weekday == 7 || isTanggalMerah(date)) {
       jadwalList.clear();
       return;
     }
@@ -30,17 +30,35 @@ class JadwalController extends GetxController {
     
     final formattedDate = '${date.day} ${months[date.month - 1]} ${date.year}';
 
-    // Jika hari Sabtu (6), jadwal bisa berbeda misal setengah hari, atau disamakan dengan hari biasa
-    // Di sini kita samakan dengan hari biasa sebagai contoh (08:00 - 17:00)
+    // Jadwal magang: 08:00 hingga 16:00
     jadwalList.value = [
       JadwalModel(
         tanggal: formattedDate,
         jamMasuk: '08:00',
-        jamPulang: date.weekday == 6 ? '14:00' : '17:00', // Sabtu pulang lebih cepat sebagai contoh
+        jamPulang: '16:00',
         tipe: 'WFO',
       )
     ];
   }
+
+  bool isTanggalMerah(DateTime date) {
+    // Sebagai contoh statis beberapa hari libur nasional 2026
+    // Nantinya bisa menggunakan API libur nasional
+    final liburNasional = [
+      '2026-01-01', // Tahun Baru Masehi
+      '2026-02-17', // Isra Mikraj
+      '2026-03-20', // Hari Raya Nyepi
+      '2026-03-20', // Idul Fitri (estimasi)
+      '2026-05-01', // Hari Buruh
+      '2026-05-14', // Kenaikan Isa Almasih
+      '2026-05-26', // Idul Adha (estimasi)
+      '2026-08-17', // Hari Kemerdekaan RI
+      '2026-12-25', // Hari Raya Natal
+    ];
+    final formatted = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    return liburNasional.contains(formatted);
+  }
+
 
   void previousMonth() {
     currentMonth.value = DateTime(
