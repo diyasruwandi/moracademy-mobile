@@ -133,6 +133,16 @@ class ApiService extends GetConnect implements GetxService {
     return await qrClient.get(url, headers: headers);
   }
 
+  /// Mengajukan izin (Sakit, Izin Pribadi, dll)
+  Future<Response> ajukanIzin(FormData data) async {
+    return await post(ApiEndpoints.presensiIzin, data);
+  }
+
+  /// Mengambil riwayat presensi (bulanan) dari backend utama
+  Future<Response> getPresensiHistory(int month, int year) async {
+    return await get('${ApiEndpoints.presensiHistory}?month=$month&year=$year');
+  }
+
   // =========================================================================
   // LOGBOOK ENDPOINTS (moracademy)
   // =========================================================================

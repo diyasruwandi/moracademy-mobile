@@ -130,40 +130,41 @@ class IzinView extends GetView<IzinController> {
               ),
             ),
             const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () {
-                // File picker placeholder
-              },
+            Obx(() => GestureDetector(
+              onTap: controller.pickImage,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 32),
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: AppColors.border,
+                    color: controller.lampiranPath.value != null ? AppColors.primary : AppColors.border,
                     style: BorderStyle.solid,
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
                     Icon(
-                      Icons.upload_outlined,
-                      color: AppColors.textHint,
+                      controller.lampiranPath.value != null ? Icons.check_circle_outline : Icons.upload_outlined,
+                      color: controller.lampiranPath.value != null ? AppColors.primary : AppColors.textHint,
                       size: 32,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Unggah bukti pendukung',
+                      controller.lampiranPath.value != null 
+                          ? controller.lampiranPath.value!.split('/').last
+                          : 'Unggah bukti pendukung',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.textHint,
+                        color: controller.lampiranPath.value != null ? AppColors.textPrimary : AppColors.textHint,
                         fontSize: 13,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            )),
             const SizedBox(height: 32),
 
             // Submit button
