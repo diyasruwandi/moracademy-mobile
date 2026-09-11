@@ -88,7 +88,7 @@ class JadwalView extends GetView<JadwalController> {
                   .asMap()
                   .entries
                   .map((entry) {
-                    final isWeekend = entry.key == 5 || entry.key == 6; // Sabtu & Minggu is red
+                    final isHoliday = entry.key == 6; // Hanya Minggu yang merah
                     return SizedBox(
                       width: 36,
                       child: Text(
@@ -97,7 +97,7 @@ class JadwalView extends GetView<JadwalController> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isWeekend ? AppColors.error : AppColors.textPrimary,
+                          color: isHoliday ? AppColors.error : AppColors.textPrimary,
                         ),
                       ),
                     );
@@ -130,7 +130,7 @@ class JadwalView extends GetView<JadwalController> {
       final date = DateTime(month.year, month.month, day);
       final isToday = controller.isToday(date);
       final isSelected = controller.isSelected(date);
-      final isWeekend = date.weekday == 6 || date.weekday == 7 || controller.isTanggalMerah(date); // Sabtu, Minggu, atau Tanggal Merah is red
+      final isHoliday = date.weekday == 7 || controller.isTanggalMerah(date); // Minggu atau Tanggal Merah is red
 
       currentRow.add(
         GestureDetector(
@@ -156,7 +156,7 @@ class JadwalView extends GetView<JadwalController> {
                       ? Colors.white
                       : isToday
                           ? AppColors.primary
-                          : isWeekend
+                          : isHoliday
                               ? AppColors.error
                               : AppColors.textPrimary,
                 ),
@@ -259,7 +259,7 @@ class JadwalView extends GetView<JadwalController> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.badgeWFO,
+                    color: jadwal.tipe == 'WFO' ? AppColors.badgeWFO : AppColors.error,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(

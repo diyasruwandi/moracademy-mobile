@@ -1,34 +1,83 @@
 import 'package:get/get.dart';
 import '../../../../models/jadwal_model.dart';
+import '../../../../core/services/api_service.dart';
 
 class JadwalController extends GetxController {
   final selectedDate = DateTime.now().obs;
   final currentMonth = DateTime.now().obs;
   final jadwalList = <JadwalModel>[].obs;
+  
+  // Store fetched history to determine leave days
+  final historyPresensi = <dynamic>[].obs;
+  final isLoadingHistory = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     // Listen to changes in selectedDate and update jadwalList automatically
     ever(selectedDate, (_) => _generateJadwalForSelectedDate());
+    ever(currentMonth, (_) => _fetchHistory());
+    
+    _fetchHistory();
     _generateJadwalForSelectedDate();
+  }
+
+  Future<void> _fetchHistory() async {
+    isLoadingHistory.value = true;
+    try {
+      final month = currentMonth.value.month;
+      final year = currentMonth.value.year;
+      final response = await ApiService.to.getPresensiHistory(month, year);
+      
+      if (response.isOk && response.body['success'] == true) {
+        historyPresensi.value = response.body['data'] ?? [];
+        _generateJadwalForSelectedDate(); // Refresh list after getting data
+      }
+    } catch (e) {
+      print('Failed to fetch history in Jadwal: $e');
+    } finally {
+      isLoadingHistory.value = false;
+    }
   }
 
   void _generateJadwalForSelectedDate() {
     final date = selectedDate.value;
+    jadwalList.clear();
     
-    // Libur jika Sabtu (6), Minggu (7), atau tanggal merah
-    if (date.weekday == 6 || date.weekday == 7 || isTanggalMerah(date)) {
-      jadwalList.clear();
-      return;
-    }
+    final formattedCheckDate = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    
+    // Cek apakah ada record izin/sakit di history untuk tanggal ini
+    final recordHariIni = historyPresensi.firstWhere(
+      (record) => record['tanggal'] != null && record['tanggal'].toString().startsWith(formattedCheckDate),
+      orElse: () => null,
+    );
+
+    final isIzin = recordHariIni != null && 
+        ['sakit', 'izin pribadi', 'lainnya', 'izin'].contains(recordHariIni['status'].toString().toLowerCase());
 
     final months = [
       'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
     ];
-    
     final formattedDate = '${date.day} ${months[date.month - 1]} ${date.year}';
+
+    if (isIzin) {
+      final statusIzin = recordHariIni['status'].toString().toUpperCase();
+      jadwalList.value = [
+        JadwalModel(
+          tanggal: formattedDate,
+          jamMasuk: '-',
+          jamPulang: '-',
+          tipe: statusIzin, // Menampilkan SAKIT / IZIN
+        )
+      ];
+      return;
+    }
+    
+    // Libur jika Sabtu (6), Minggu (7), atau tanggal merah (dan tidak sedang izin)
+    if (date.weekday == 6 || date.weekday == 7 || isTanggalMerah(date)) {
+      return;
+    }
 
     // Jadwal magang: 08:00 hingga 16:00
     jadwalList.value = [
@@ -58,7 +107,6 @@ class JadwalController extends GetxController {
     final formatted = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     return liburNasional.contains(formatted);
   }
-
 
   void previousMonth() {
     currentMonth.value = DateTime(

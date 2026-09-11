@@ -44,53 +44,54 @@ class MainNavView extends GetView<MainNavController> {
           ),
         ),
       ),
-      bottomNavigationBar: Obx(() => Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow,
-                  blurRadius: 20,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      // Riwayat
-                      _navItem(
+      floatingActionButton: _qrButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Obx(
+        () => BottomAppBar(
+          color: Colors.white,
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          elevation: 16,
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Spacer and Riwayat on the left
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: _navItem(
                         icon: Icons.history,
                         label: 'Riwayat',
                         index: 1,
                         isSelected: controller.currentIndex.value == 1,
                       ),
-                      // QR Center button
-                      _qrButton(),
-                      // Logbook
-                      _navItem(
+                    ),
+                  ),
+                ),
+                // Logbook on the right
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: _navItem(
                         icon: Icons.description_outlined,
                         label: 'Logbook',
                         index: 2,
                         isSelected: controller.currentIndex.value == 2,
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -102,8 +103,9 @@ class MainNavView extends GetView<MainNavController> {
   }) {
     return GestureDetector(
       onTap: () => controller.changePage(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(25),
@@ -134,27 +136,15 @@ class MainNavView extends GetView<MainNavController> {
   }
 
   Widget _qrButton() {
-    return GestureDetector(
-      onTap: () => Get.toNamed(Routes.VERIFIKASI),
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.qr_code_scanner,
-          color: Colors.white,
-          size: 28,
-        ),
+    return FloatingActionButton(
+      onPressed: () => Get.toNamed(Routes.VERIFIKASI),
+      backgroundColor: AppColors.primary,
+      elevation: 4,
+      shape: const CircleBorder(),
+      child: const Icon(
+        Icons.qr_code_scanner,
+        color: Colors.white,
+        size: 28,
       ),
     );
   }
