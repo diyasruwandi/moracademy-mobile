@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../models/tugas_model.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class TugasController extends GetxController {
   final tugasList = <TugasModel>[].obs;
@@ -21,10 +22,10 @@ class TugasController extends GetxController {
         final List<dynamic> data = response.body['data'];
         tugasList.value = data.map((json) => TugasModel.fromJson(json)).toList();
       } else {
-        Get.snackbar('Gagal', ApiService.getErrorMessage(response));
+        AppSnackbar.showError('Gagal', ApiService.getErrorMessage(response));
       }
     } catch (e) {
-      Get.snackbar('Error', 'Terjadi kesalahan: $e');
+      AppSnackbar.showError('Error', 'Terjadi kesalahan: $e');
     } finally {
       isLoading.value = false;
     }

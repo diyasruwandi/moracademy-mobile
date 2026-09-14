@@ -55,7 +55,8 @@ class VerifikasiView extends GetView<PresensiController> {
                   ),
                 ],
               ),
-              child: Column(
+              child: SingleChildScrollView(
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Obx(
@@ -94,6 +95,35 @@ class VerifikasiView extends GetView<PresensiController> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
+                        ),
+                      );
+                    }
+
+                    // Jika user sedang izin hari ini
+                    if (controller.hasIzin.value) {
+                      final status = controller.izinStatus.value ?? 'Izin';
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.orange.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.event_busy, color: Colors.orange.shade700, size: 20),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Anda sedang izin hari ini (${status[0].toUpperCase()}${status.substring(1)})',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.orange.shade800,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -145,17 +175,18 @@ class VerifikasiView extends GetView<PresensiController> {
                     );
                   }),
 
-                  const Spacer(),
+                  const SizedBox(height: 16),
 
-                  // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk
+                  // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk DAN tidak izin
                   SizedBox(
                     width: double.infinity,
 
                     child: Obx(
                       () {
                         final sudahMasuk = controller.hasMasuk.value;
+                        final sedangIzin = controller.hasIzin.value;
                         final canMasuk =
-                            controller.isAllVerified.value && !sudahMasuk;
+                            controller.isAllVerified.value && !sudahMasuk && !sedangIzin;
 
                         return ElevatedButton(
                           onPressed: canMasuk
@@ -182,9 +213,11 @@ class VerifikasiView extends GetView<PresensiController> {
                             ),
                           ),
                           child: Text(
-                            sudahMasuk
-                                ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
-                                : 'Presensi masuk',
+                            sedangIzin
+                                ? 'Tidak dapat presensi (Izin)'
+                                : sudahMasuk
+                                    ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
+                                    : 'Presensi masuk',
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -202,9 +235,11 @@ class VerifikasiView extends GetView<PresensiController> {
                       () {
                         final sudahMasuk = controller.hasMasuk.value;
                         final sudahPulang = controller.hasPulang.value;
+                        final sedangIzin = controller.hasIzin.value;
                         final canPulang = controller.isAllVerified.value &&
                             sudahMasuk &&
-                            !sudahPulang;
+                            !sudahPulang &&
+                            !sedangIzin;
 
                         return ElevatedButton(
                           onPressed: canPulang
@@ -231,9 +266,11 @@ class VerifikasiView extends GetView<PresensiController> {
                             ),
                           ),
                           child: Text(
-                            sudahPulang
-                                ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
-                                : 'Presensi pulang',
+                            sedangIzin
+                                ? 'Tidak dapat presensi (Izin)'
+                                : sudahPulang
+                                    ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
+                                    : 'Presensi pulang',
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -244,6 +281,7 @@ class VerifikasiView extends GetView<PresensiController> {
                     ),
                   ),
                 ],
+              ),
               ),
             ),
           ),

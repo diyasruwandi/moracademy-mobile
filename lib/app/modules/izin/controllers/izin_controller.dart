@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/services/storage_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class IzinController extends GetxController {
   final jenisIzin = 'Sakit'.obs;
@@ -45,28 +47,12 @@ class IzinController extends GetxController {
 
   Future<void> ajukanIzin() async {
     if (tanggalMulai.value == null || tanggalSelesai.value == null) {
-      Get.snackbar(
-        'Peringatan',
-        'Tanggal mulai dan selesai harus diisi',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showWarning('Peringatan', 'Tanggal mulai dan selesai harus diisi!');
       return;
     }
 
     if (tanggalSelesai.value!.isBefore(tanggalMulai.value!)) {
-      Get.snackbar(
-        'Peringatan',
-        'Tanggal selesai tidak boleh sebelum tanggal mulai',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showWarning('Peringatan', 'Tanggal selesai tidak boleh sebelum tanggal mulai');
       return;
     }
 
@@ -103,38 +89,17 @@ class IzinController extends GetxController {
       if (response.isOk) {
         Get.back(); // close loading
         Get.back(); // return to previous page
-        Get.snackbar(
-          'Berhasil',
-          'Izin berhasil diajukan',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        // Show success notification after navigation settles
+        Future.delayed(const Duration(milliseconds: 500), () {
+          AppSnackbar.showSuccess('Berhasil', 'Izin berhasil diajukan');
+        });
       } else {
         Get.back(); // close loading
-        Get.snackbar(
-          'Gagal',
-          ApiService.getErrorMessage(response),
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        AppSnackbar.showError('Gagal', ApiService.getErrorMessage(response));
       }
     } catch (e) {
       Get.back(); // close loading
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Error', 'Terjadi kesalahan: $e');
     } finally {
       isLoading.value = false;
     }

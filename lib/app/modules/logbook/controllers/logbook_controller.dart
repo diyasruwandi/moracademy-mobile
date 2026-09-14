@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 import '../../../../models/logbook_model.dart';
 
 class LogbookController extends GetxController {
@@ -58,16 +59,7 @@ class LogbookController extends GetxController {
       } else {
         // Jika server mengembalikan error atau tidak terhubung
         final msg = ApiService.getErrorMessage(response);
-        Get.snackbar(
-          'Info',
-          msg,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.amber.shade100,
-          colorText: Colors.amber.shade900,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 3),
-        );
+        AppSnackbar.showWarning('Info', msg);
       }
     } catch (e) {
       debugPrint('Error loading logbook: $e');
@@ -241,15 +233,7 @@ class LogbookController extends GetxController {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
-      Get.snackbar(
-        'Gagal Memilih Gambar',
-        'Terjadi kendala saat membuka file gambar: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Gagal Memilih Gambar', 'Terjadi kendala saat membuka file gambar: $e');
     }
   }
 
@@ -265,15 +249,7 @@ class LogbookController extends GetxController {
     final detail = detailController.text.trim();
 
     if (judul.isEmpty || detail.isEmpty) {
-      Get.snackbar(
-        'Validasi Gagal',
-        'Judul dan detail kegiatan wajib diisi.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange.shade100,
-        colorText: Colors.orange.shade900,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showWarning('Validasi Gagal', 'Judul dan detail kegiatan wajib diisi.');
       return;
     }
 
@@ -315,45 +291,20 @@ class LogbookController extends GetxController {
 
         Get.back(); // Kembali ke halaman logbook list
 
-        Get.snackbar(
-          'Berhasil Disimpan',
-          response.body['message'] ?? 'Catatan logbook berhasil dikirim.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          icon: const Icon(Icons.check_circle, color: Colors.green),
-          duration: const Duration(seconds: 4),
-        );
+        // Show success notification after navigation settles
+        Future.delayed(const Duration(milliseconds: 500), () {
+          AppSnackbar.showSuccess('Berhasil Disimpan', response.body['message'] ?? 'Catatan logbook berhasil dikirim.');
+        });
       } else {
         final errorMsg = ApiService.getErrorMessage(response);
-        Get.snackbar(
-          'Gagal Menyimpan',
-          errorMsg,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade900,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          icon: const Icon(Icons.error_outline, color: Colors.red),
-          duration: const Duration(seconds: 4),
-        );
+        AppSnackbar.showError('Gagal Menyimpan', errorMsg);
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
       debugPrint('Exception saat submit logbook: $e');
-      Get.snackbar(
-        'Terjadi Kesalahan',
-        'Gagal mengirim data ke server: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Terjadi Kesalahan', 'Gagal mengirim data ke server: $e');
     } finally {
       isSubmitting.value = false;
     }
@@ -365,25 +316,9 @@ class LogbookController extends GetxController {
       final response = await ApiService.to.deleteLogbook(id);
       if (response.isOk) {
         logbookList.removeWhere((item) => item.id == id);
-        Get.snackbar(
-          'Berhasil',
-          'Catatan logbook berhasil dihapus.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        AppSnackbar.showSuccess('Berhasil', 'Catatan logbook berhasil dihapus.');
       } else {
-        Get.snackbar(
-          'Gagal',
-          ApiService.getErrorMessage(response),
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        AppSnackbar.showError('Gagal', ApiService.getErrorMessage(response));
       }
     } catch (e) {
       debugPrint('Error deleting logbook: $e');

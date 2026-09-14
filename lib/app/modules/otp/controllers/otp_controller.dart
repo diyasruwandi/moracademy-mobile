@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/services/storage_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class OtpController extends GetxController {
   final otpController = TextEditingController();
@@ -64,53 +65,21 @@ class OtpController extends GetxController {
       if (response.isOk && response.body is Map && response.body['success'] == true) {
         startResendTimer();
         final message = response.body['message'] ?? 'Kode OTP baru telah dikirimkan.';
-        Get.snackbar(
-          'Berhasil',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        AppSnackbar.showSuccess('Berhasil', message);
       } else {
         final errorMessage = ApiService.getErrorMessage(response);
-        Get.snackbar(
-          'Gagal Mengirim OTP',
-          errorMessage,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        AppSnackbar.showError('Gagal Mengirim OTP', errorMessage);
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan koneksi: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Error', 'Terjadi kesalahan: ${e.toString()}');
     }
   }
 
   Future<void> verifyOtp() async {
     final code = otpController.text.trim();
     if (code.length < 6) {
-      Get.snackbar(
-        'Peringatan',
-        'Masukkan 6 digit kode OTP lengkap',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showWarning('Peringatan', 'Masukkan 6 digit kode OTP lengkap');
       return;
     }
 
@@ -139,42 +108,19 @@ class OtpController extends GetxController {
         }
 
         final message = response.body['message'] ?? 'Verifikasi berhasil! Selamat datang.';
-        Get.snackbar(
-          'Berhasil',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 3),
-        );
-
+        // Navigate first to avoid race condition with snackbar overlay
         Get.offAllNamed(Routes.MAIN_NAV);
+        // Show success notification after navigation completes
+        Future.delayed(const Duration(milliseconds: 500), () {
+          AppSnackbar.showSuccess('Berhasil', message);
+        });
       } else {
         final errorMessage = ApiService.getErrorMessage(response);
-        Get.snackbar(
-          'Verifikasi Gagal',
-          errorMessage,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 4),
-        );
+        AppSnackbar.showError('Gagal Verifikasi', errorMessage);
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan koneksi: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Error', 'Terjadi kesalahan koneksi: ${e.toString()}');
     }
   }
 
