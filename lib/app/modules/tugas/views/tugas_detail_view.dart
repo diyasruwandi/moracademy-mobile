@@ -5,6 +5,7 @@ import '../controllers/tugas_controller.dart';
 import '../../../../models/tugas_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../routes/app_pages.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class TugasDetailView extends GetView<TugasController> {
   const TugasDetailView({super.key});
@@ -149,7 +150,7 @@ class TugasDetailView extends GetView<TugasController> {
                     if (await canLaunchUrl(uri)) {
                       await launchUrl(uri);
                     } else {
-                      Get.snackbar('Error', 'Tidak dapat membuka tautan');
+                      AppSnackbar.showError('Error', 'Tidak dapat membuka tautan');
                     }
                   },
                   child: Text(

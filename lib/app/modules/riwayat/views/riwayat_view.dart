@@ -238,7 +238,7 @@ class RiwayatView extends GetView<RiwayatController> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: presensi.tipe == 'IZIN'
+              color: ['SAKIT', 'IZIN PRIBADI', 'LAINNYA', 'IZIN'].contains(presensi.tipe)
                   ? AppColors.badgeIzin
                   : presensi.tipe == 'WFH'
                       ? AppColors.badgeWFH

@@ -14,12 +14,33 @@ class PresensiModel {
   });
 
   factory PresensiModel.fromJson(Map<String, dynamic> json) {
+    String rawStatus = json['status'] ?? '';
+    String derivedTipe = json['tipe'] ?? 'WFO';
+    
+    final izinStatuses = ['sakit', 'izin pribadi', 'lainnya', 'izin'];
+    if (izinStatuses.contains(rawStatus.toLowerCase())) {
+      derivedTipe = rawStatus.toUpperCase();
+    }
+
+    // Format date from YYYY-MM-DD to DD Month YYYY if needed
+    String formattedDate = json['tanggal'] ?? '';
+    try {
+      if (formattedDate.contains('-')) {
+        final date = DateTime.parse(formattedDate);
+        final months = [
+          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        formattedDate = '${date.day} ${months[date.month - 1]} ${date.year}';
+      }
+    } catch (_) {}
+
     return PresensiModel(
-      tanggal: json['tanggal'] ?? '',
+      tanggal: formattedDate,
       jamMasuk: json['jam_masuk'] ?? '--:--',
       jamPulang: json['jam_pulang'] ?? '--:--',
-      status: json['status'] ?? '',
-      tipe: json['tipe'] ?? 'WFO',
+      status: rawStatus,
+      tipe: derivedTipe,
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:get/get.dart';
 import '../../../../models/presensi_model.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class RiwayatController extends GetxController {
   final selectedTab = 0.obs; // 0 = Presensi, 1 = Izin
@@ -47,17 +48,17 @@ class RiwayatController extends GetxController {
         final List<PresensiModel> allData = 
             data.map((json) => PresensiModel.fromJson(json)).toList();
 
-        // Pisahkan data presensi (WFO/WFH) dan izin
-        presensiList.value = allData.where((p) => p.tipe != 'IZIN').toList();
-        izinList.value = allData.where((p) => p.tipe == 'IZIN').toList();
+        final izinStatuses = ['sakit', 'izin pribadi', 'lainnya', 'izin'];
+        presensiList.value = allData.where((p) => !izinStatuses.contains(p.status.toLowerCase())).toList();
+        izinList.value = allData.where((p) => izinStatuses.contains(p.status.toLowerCase())).toList();
       } else {
         // Fallback jika gagal
         presensiList.value = [];
         izinList.value = [];
-        Get.snackbar('Gagal Memuat Riwayat', ApiService.getErrorMessage(response));
+        AppSnackbar.showError('Gagal Memuat Riwayat', ApiService.getErrorMessage(response));
       }
     } catch (e) {
-      Get.snackbar('Terjadi Kesalahan', e.toString());
+      AppSnackbar.showError('Terjadi Kesalahan', e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -79,7 +80,8 @@ class RiwayatController extends GetxController {
   }
 
   String getStatusEmoji(PresensiModel presensi) {
-    if (presensi.tipe == 'IZIN' || presensi.status == 'izin') {
+    final izinStatuses = ['sakit', 'izin pribadi', 'lainnya', 'izin'];
+    if (izinStatuses.contains(presensi.status.toLowerCase())) {
       return '😐';
     }
 
@@ -101,7 +103,8 @@ class RiwayatController extends GetxController {
   }
 
   String getStatusMood(PresensiModel presensi) {
-    if (presensi.tipe == 'IZIN' || presensi.status == 'izin') {
+    final izinStatuses = ['sakit', 'izin pribadi', 'lainnya', 'izin'];
+    if (izinStatuses.contains(presensi.status.toLowerCase())) {
       return 'neutral';
     }
 

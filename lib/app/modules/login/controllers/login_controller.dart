@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
@@ -10,28 +11,12 @@ class LoginController extends GetxController {
   Future<void> login() async {
     final email = emailController.text.trim();
     if (email.isEmpty) {
-      Get.snackbar(
-        'Peringatan',
-        'Email harus diisi',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showWarning('Peringatan', 'Email harus diisi');
       return;
     }
 
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar(
-        'Peringatan',
-        'Format email tidak valid',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showWarning('Peringatan', 'Format email tidak valid');
       return;
     }
 
@@ -43,41 +28,19 @@ class LoginController extends GetxController {
 
       if (response.isOk && response.body is Map && response.body['success'] == true) {
         final message = response.body['message'] ?? 'Kode OTP berhasil dikirimkan.';
-        Get.snackbar(
-          'Berhasil',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 4),
-        );
+        // Navigate first to avoid race condition with snackbar overlay
         Get.toNamed(Routes.OTP, arguments: {'email': email});
+        // Show success notification after navigation completes
+        Future.delayed(const Duration(milliseconds: 500), () {
+          AppSnackbar.showSuccess('Berhasil', message);
+        });
       } else {
         final errorMessage = ApiService.getErrorMessage(response);
-        Get.snackbar(
-          'Gagal Masuk',
-          errorMessage,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 4),
-        );
+        AppSnackbar.showError('Gagal Masuk', errorMessage);
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar(
-        'Error',
-        'Terjadi kesalahan koneksi: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Error', 'Terjadi kesalahan koneksi: ${e.toString()}');
     }
   }
 
