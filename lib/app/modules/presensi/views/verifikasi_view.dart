@@ -186,8 +186,9 @@ class VerifikasiView extends GetView<PresensiController> {
                         final sudahMasuk = controller.hasMasuk.value;
                         final sedangIzin = controller.hasIzin.value;
                         final isLateDisabled = controller.isDisabledMasuk.value;
+                        final adaJadwal = controller.hasJadwal.value;
                         final canMasuk =
-                            controller.isAllVerified.value && !sudahMasuk && !sedangIzin && !isLateDisabled;
+                            controller.isAllVerified.value && !sudahMasuk && !sedangIzin && !isLateDisabled && adaJadwal;
 
                         return ElevatedButton(
                           onPressed: canMasuk
@@ -214,13 +215,15 @@ class VerifikasiView extends GetView<PresensiController> {
                             ),
                           ),
                           child: Text(
-                            sedangIzin
-                                ? 'Tidak dapat presensi (Izin)'
-                                : isLateDisabled 
-                                    ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
-                                    : sudahMasuk
-                                        ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
-                                        : 'Presensi masuk',
+                            !adaJadwal 
+                                ? 'Tidak Ada Jadwal Aktif'
+                                : sedangIzin
+                                    ? 'Tidak dapat presensi (Izin)'
+                                    : isLateDisabled 
+                                        ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
+                                        : sudahMasuk
+                                            ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
+                                            : 'Presensi masuk',
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         );
