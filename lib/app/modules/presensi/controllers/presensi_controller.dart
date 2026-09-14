@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 import '../../riwayat/controllers/riwayat_controller.dart';
 
 class PresensiController extends GetxController {
@@ -19,16 +20,24 @@ class PresensiController extends GetxController {
   // Status Presensi Hari Ini
   final hasMasuk = false.obs;
   final hasPulang = false.obs;
+  final hasIzin = false.obs;
+  final izinStatus = RxnString();
   final jamMasuk = RxnString();
   final jamPulang = RxnString();
   final isCheckingToday = false.obs;
+  
+  // Jadwal dinamis
+  final jadwalMasuk = RxnString();
+  final jadwalPulang = RxnString();
+  final isDisabledMasuk = false.obs;
 
+  // Alasan pulang cepat
+  final alasanPulangCepat = RxnString();
 
   @override
   void onInit() {
     super.onInit();
     loadCurrentLocation();
-
     checkTodayStatus();
   }
 
@@ -41,9 +50,15 @@ class PresensiController extends GetxController {
         if (data is Map) {
           hasMasuk.value = data['has_masuk'] == true;
           hasPulang.value = data['has_pulang'] == true;
+          hasIzin.value = data['has_izin'] == true;
+          izinStatus.value = data['status']?.toString();
 
           jamMasuk.value = data['jam_masuk']?.toString();
           jamPulang.value = data['jam_pulang']?.toString();
+          
+          jadwalMasuk.value = data['jadwal_masuk']?.toString();
+          jadwalPulang.value = data['jadwal_pulang']?.toString();
+          isDisabledMasuk.value = data['is_disabled_masuk'] == true;
         }
       }
     } catch (_) {}
@@ -124,6 +139,7 @@ class PresensiController extends GetxController {
         qrToken: qrToken,
         latitude: lat,
         longitude: lng,
+        alasanPulang: alasanPulangCepat.value,
       );
 
       isLoading.value = false;
@@ -131,16 +147,13 @@ class PresensiController extends GetxController {
       if (response.isOk && response.body is Map && response.body['success'] == true) {
         final message = response.body['message'] ?? 'Presensi berhasil dicatat.';
         Get.back(); // Tutup scanner kamera
-        Get.snackbar(
-          'Berhasil',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade100,
-          colorText: Colors.green.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 4),
-        );
+        // Reset alasan pulang cepat jika berhasil
+        alasanPulangCepat.value = null;
+
+        // Show success notification after scanner page is fully closed
+        Future.delayed(const Duration(milliseconds: 500), () {
+          AppSnackbar.showSuccess('Berhasil', message);
+        });
         // Refresh status presensi
         checkTodayStatus();
         
@@ -150,16 +163,7 @@ class PresensiController extends GetxController {
         }
       } else {
         final errorMessage = ApiService.getErrorMessage(response);
-        Get.snackbar(
-          'Gagal Presensi',
-          errorMessage,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade800,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 4),
-        );
+        AppSnackbar.showError('Gagal Presensi', errorMessage);
         // Izinkan scan ulang jika gagal
         Future.delayed(const Duration(seconds: 2), () {
           hasScannedQr.value = false;
@@ -168,15 +172,7 @@ class PresensiController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       hasScannedQr.value = false;
-      Get.snackbar(
-        'Error',
-        'Gagal memproses presensi: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade800,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      AppSnackbar.showError('Error', 'Gagal memproses presensi: ${e.toString()}');
     }
   }
 }

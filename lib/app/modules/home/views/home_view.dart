@@ -16,33 +16,54 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 16),
-              _buildAttendanceCard(),
-              const SizedBox(height: 16),
-              _buildStatsRow(),
-              const SizedBox(height: 12),
-              _buildInfoRow(),
-              const SizedBox(height: 20),
-              _buildMenuGrid(),
-              const SizedBox(height: 20),
-              _buildBanner(),
-              const SizedBox(height: 16),
-            ]
-                .animate(interval: 100.ms)
-                .fade(duration: 500.ms)
-                .slideY(
-                  begin: -0.2, // Mulai sedikit dari atas (slide down)
-                  end: 0,
-                  curve: Curves.easeOutCubic, // Mulus, tanpa bounce
-                  duration: 600.ms,
+        child: Stack(
+          children: [
+            // Fixed background logo — does not scroll
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.18,
+              left: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.06,
+                  child: SvgPicture.asset(
+                    moracademyLogoAsset,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-          ),
+              ),
+            ),
+            // Scrollable content
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 16),
+                  _buildAttendanceCard(),
+                  const SizedBox(height: 16),
+                  _buildStatsRow(),
+                  const SizedBox(height: 12),
+                  _buildInfoRow(),
+                  const SizedBox(height: 20),
+                  _buildMenuGrid(),
+                  const SizedBox(height: 20),
+                  _buildBanner(),
+                  const SizedBox(height: 16),
+                ]
+                    .animate(interval: 100.ms)
+                    .fade(duration: 500.ms)
+                    .slideY(
+                      begin: -0.2,
+                      end: 0,
+                      curve: Curves.easeOutCubic,
+                      duration: 600.ms,
+                    ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -153,13 +174,13 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 10),
                 _attendanceRow(
                   AppColors.warning,
-                  'Terlambat 1 Kali',
+                  'Terlambat',
                   controller.terlambat,
                 ),
                 const SizedBox(height: 10),
                 _attendanceRow(
                   AppColors.error,
-                  'Kali Tidak Presensi',
+                  'Tidak Presensi',
                   controller.tidakPresensi,
                 ),
               ],

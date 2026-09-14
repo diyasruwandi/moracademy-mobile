@@ -96,6 +96,7 @@ class ApiService extends GetConnect implements GetxService {
     required String qrToken,
     required double latitude,
     required double longitude,
+    String? alasanPulang,
   }) async {
     final url = '${ApiEndpoints.qrBaseUrl}${ApiEndpoints.presensiScan}';
     final headers = <String, String>{
@@ -106,14 +107,21 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
+    
+    final payload = <String, dynamic>{
+      'qr_token': qrToken,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+    
+    if (alasanPulang != null && alasanPulang.trim().isNotEmpty) {
+      payload['alasan_pulang'] = alasanPulang.trim();
+    }
+
     final qrClient = GetConnect(timeout: const Duration(seconds: 60));
     return await qrClient.post(
       url,
-      {
-        'qr_token': qrToken,
-        'latitude': latitude,
-        'longitude': longitude,
-      },
+      payload,
       headers: headers,
     );
   }

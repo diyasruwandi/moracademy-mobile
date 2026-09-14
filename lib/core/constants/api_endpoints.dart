@@ -22,6 +22,7 @@ class ApiEndpoints {
       return 'http://192.168.18.175:8000/api/v1';
     }
     return 'http://192.168.18.175:8000/api/v1';
+
   }
 
   // URL Server QR Presensi (qr_moracademy - Port 8001)
@@ -41,6 +42,7 @@ class ApiEndpoints {
       return 'http://192.168.18.175:8001/api';
     }
     return 'http://192.168.18.175:8001/api';
+
   }
 
   // Auth Endpoints (Port 8000 / Backend Utama)

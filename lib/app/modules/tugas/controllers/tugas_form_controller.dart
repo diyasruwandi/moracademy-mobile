@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../models/tugas_model.dart';
+import '../../../../core/utils/app_snackbar.dart';
 import 'tugas_controller.dart';
 
 class TugasFormController extends GetxController {
@@ -84,12 +85,12 @@ class TugasFormController extends GetxController {
 
   Future<void> simpanTugas() async {
     if (judulController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Judul tugas wajib diisi!');
+      AppSnackbar.showError('Error', 'Judul tugas wajib diisi!');
       return;
     }
     
     if (pemberiTugasController.text.trim().isEmpty || penerimaTugasController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
+      AppSnackbar.showError('Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
       return;
     }
 
@@ -131,18 +132,22 @@ class TugasFormController extends GetxController {
       
       if (response.isOk && response.body['success'] == true) {
         Get.until((route) => route.settings.name == '/tugas');
-        Get.snackbar('Sukses', isEdit.value ? 'Tugas berhasil diperbarui' : 'Tugas berhasil ditambahkan');
+        // Show success notification after navigation settles
+        final successMsg = isEdit.value ? 'Tugas berhasil diperbarui' : 'Tugas berhasil ditambahkan';
+        Future.delayed(const Duration(milliseconds: 500), () {
+          AppSnackbar.showSuccess('Sukses', successMsg);
+        });
         if (Get.isRegistered<TugasController>()) {
           Get.find<TugasController>().loadTugas();
         }
       } else {
-        Get.snackbar('Gagal', ApiService.getErrorMessage(response));
+        AppSnackbar.showError('Gagal', ApiService.getErrorMessage(response));
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      Get.snackbar('Error', 'Terjadi kesalahan: $e');
+      AppSnackbar.showError('Error', 'Terjadi kesalahan: $e');
     } finally {
       isLoading.value = false;
     }

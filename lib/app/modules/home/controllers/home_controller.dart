@@ -50,7 +50,9 @@ class HomeController extends GetxController {
         int tidak = 0;
 
         for (var p in currentMonthData) {
-          if (p.tipe == 'IZIN' || p.status == 'izin') continue;
+          // Skip semua tipe izin (sakit, izin pribadi, lainnya, izin)
+          final izinStatuses = ['sakit', 'izin pribadi', 'lainnya', 'izin'];
+          if (izinStatuses.contains(p.status.toLowerCase()) || izinStatuses.contains(p.tipe.toLowerCase())) continue;
           if (p.status == 'tepat_waktu') tepat++;
           else if (p.status == 'terlambat') lambat++;
           else if (p.status == 'tidak_presensi' || p.jamMasuk == '--:--') tidak++;

@@ -7,6 +7,7 @@ class UserModel {
   final String telepon;
   final String bergabungSejak;
   final String avatarUrl;
+  final String bannerUrl;
   final String institusi;
   final String jurusan;
   final String perusahaan;
@@ -20,6 +21,7 @@ class UserModel {
     required this.telepon,
     required this.bergabungSejak,
     this.avatarUrl = '',
+    this.bannerUrl = '',
     this.institusi = '',
     this.jurusan = '',
     this.perusahaan = '',
@@ -39,6 +41,7 @@ class UserModel {
     final nomorPeserta = pesertaObj['nomor_peserta']?.toString() ?? pesertaObj['nim_nis']?.toString() ?? json['nomor_peserta']?.toString() ?? '';
     final bergabungSejak = pesertaObj['bergabung_sejak']?.toString() ?? json['bergabung_sejak']?.toString() ?? '';
     final avatarUrl = pesertaObj['foto_url']?.toString() ?? json['avatar_url']?.toString() ?? '';
+    final bannerUrl = pesertaObj['banner_url']?.toString() ?? json['banner_url']?.toString() ?? '';
     final institusi = pesertaObj['institusi_pendidikan']?.toString() ?? '';
     final jurusan = pesertaObj['jurusan']?.toString() ?? '';
     final status = magangObj['posisi']?.toString() ?? json['status']?.toString() ?? 'Peserta Magang';
@@ -53,6 +56,7 @@ class UserModel {
       telepon: telepon,
       bergabungSejak: bergabungSejak,
       avatarUrl: avatarUrl,
+      bannerUrl: bannerUrl,
       institusi: institusi,
       jurusan: jurusan,
       perusahaan: perusahaan,
@@ -69,6 +73,7 @@ class UserModel {
       'telepon': telepon,
       'bergabung_sejak': bergabungSejak,
       'avatar_url': avatarUrl,
+      'banner_url': bannerUrl,
       'institusi': institusi,
       'jurusan': jurusan,
       'perusahaan': perusahaan,
