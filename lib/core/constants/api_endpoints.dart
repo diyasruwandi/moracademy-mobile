@@ -15,12 +15,12 @@ class ApiEndpoints {
       return customBaseUrl;
     }
     if (kIsWeb) {
-      return 'http://192.168.18.208:8000/api/v1';
+      return 'http://192.168.0.179:8000/api/v1';
     }
     if (Platform.isAndroid) {
-      return 'http://192.168.18.208:8000/api/v1';
+      return 'http://192.168.0.179:8000/api/v1';
     }
-    return 'http://192.168.18.208:8000/api/v1';
+    return 'http://192.168.0.179:8000/api/v1';
   }
 
   // URL Server QR Presensi (qr_moracademy - Port 8001)
@@ -33,12 +33,12 @@ class ApiEndpoints {
       return customQrBaseUrl;
     }
     if (kIsWeb) {
-      return 'http://192.168.18.208:8001/api';
+      return 'http://192.168.0.179:8001/api';
     }
     if (Platform.isAndroid) {
-      return 'http://192.168.18.208:8001/api';
+      return 'http://192.168.0.179:8001/api';
     }
-    return 'http://192.168.18.208:8001/api';
+    return 'http://192.168.0.179:8001/api';
   }
 
   // Auth Endpoints (Port 8000 / Backend Utama)

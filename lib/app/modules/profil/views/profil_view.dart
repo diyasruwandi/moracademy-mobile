@@ -25,15 +25,27 @@ class ProfilView extends GetView<ProfilController> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF1A1D6B),
-                      Color(0xFF2E3192),
-                      Color(0xFF4A4FC4),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  image: user.bannerUrl.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(user.bannerUrl),
+                          fit: BoxFit.cover,
+                          colorFilter: ColorFilter.mode(
+                            Colors.black.withValues(alpha: 0.4),
+                            BlendMode.darken,
+                          ),
+                        )
+                      : null,
+                  gradient: user.bannerUrl.isEmpty
+                      ? const LinearGradient(
+                          colors: [
+                            Color(0xFF1A1D6B),
+                            Color(0xFF2E3192),
+                            Color(0xFF4A4FC4),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                      : null,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primary.withValues(alpha: 0.3),
@@ -68,20 +80,26 @@ class ProfilView extends GetView<ProfilController> {
                           // Avatar and name
                           Row(
                             children: [
-                              CircleAvatar(
-                                radius: 24,
-                                backgroundColor: const Color(0xFF00897B),
-                                child: Text(
-                                  user.nama.isNotEmpty
-                                      ? user.nama[0].toUpperCase()
-                                      : 'M',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
+                              user.avatarUrl.isNotEmpty
+                                  ? CircleAvatar(
+                                      radius: 24,
+                                      backgroundColor: Colors.transparent,
+                                      backgroundImage: NetworkImage(user.avatarUrl),
+                                    )
+                                  : CircleAvatar(
+                                      radius: 24,
+                                      backgroundColor: const Color(0xFF00897B),
+                                      child: Text(
+                                        user.nama.isNotEmpty
+                                            ? user.nama[0].toUpperCase()
+                                            : 'M',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
