@@ -60,7 +60,7 @@ class LoginController extends GetxController {
           'Gagal Masuk',
           errorMessage,
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
+          backgroundColor: Colors.red.shade100, 
           colorText: Colors.red.shade800,
           margin: const EdgeInsets.all(16),
           borderRadius: 12,
