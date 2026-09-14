@@ -25,6 +25,11 @@ class PresensiController extends GetxController {
   final jamMasuk = RxnString();
   final jamPulang = RxnString();
   final isCheckingToday = false.obs;
+  
+  // Jadwal dinamis
+  final jadwalMasuk = RxnString();
+  final jadwalPulang = RxnString();
+  final isDisabledMasuk = false.obs;
 
   // Alasan pulang cepat
   final alasanPulangCepat = RxnString();
@@ -33,7 +38,6 @@ class PresensiController extends GetxController {
   void onInit() {
     super.onInit();
     loadCurrentLocation();
-
     checkTodayStatus();
   }
 
@@ -51,6 +55,10 @@ class PresensiController extends GetxController {
 
           jamMasuk.value = data['jam_masuk']?.toString();
           jamPulang.value = data['jam_pulang']?.toString();
+          
+          jadwalMasuk.value = data['jadwal_masuk']?.toString();
+          jadwalPulang.value = data['jadwal_pulang']?.toString();
+          isDisabledMasuk.value = data['is_disabled_masuk'] == true;
         }
       }
     } catch (_) {}

@@ -177,7 +177,7 @@ class VerifikasiView extends GetView<PresensiController> {
 
                   const SizedBox(height: 16),
 
-                  // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk DAN tidak izin
+                  // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk DAN tidak izin DAN tidak disable
                   SizedBox(
                     width: double.infinity,
 
@@ -185,8 +185,9 @@ class VerifikasiView extends GetView<PresensiController> {
                       () {
                         final sudahMasuk = controller.hasMasuk.value;
                         final sedangIzin = controller.hasIzin.value;
+                        final isLateDisabled = controller.isDisabledMasuk.value;
                         final canMasuk =
-                            controller.isAllVerified.value && !sudahMasuk && !sedangIzin;
+                            controller.isAllVerified.value && !sudahMasuk && !sedangIzin && !isLateDisabled;
 
                         return ElevatedButton(
                           onPressed: canMasuk
@@ -215,13 +216,12 @@ class VerifikasiView extends GetView<PresensiController> {
                           child: Text(
                             sedangIzin
                                 ? 'Tidak dapat presensi (Izin)'
-                                : sudahMasuk
-                                    ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
-                                    : 'Presensi masuk',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
+                                : isLateDisabled 
+                                    ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
+                                    : sudahMasuk
+                                        ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
+                                        : 'Presensi masuk',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         );
                       },
