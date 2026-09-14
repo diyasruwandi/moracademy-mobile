@@ -244,14 +244,76 @@ class VerifikasiView extends GetView<PresensiController> {
                         return ElevatedButton(
                           onPressed: canPulang
                               ? () async {
-                                  final result = await ConfirmationDialog.show(
-                                    context,
-                                    message:
-                                        'Anda akan melakukan presensi pulang?',
-                                  );
-                                  if (result == true) {
-                                    controller.resetScanner();
-                                    Get.toNamed(Routes.PRESENSI);
+                                  final now = DateTime.now();
+                                  if (now.hour < 16) {
+                                    // Pulang Cepat
+                                    final textController = TextEditingController();
+                                    final result = await Get.dialog<bool>(
+                                      AlertDialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                        title: const Text('Pulang Cepat', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const Text('Waktu saat ini masih sebelum jam 16:00. Silakan berikan alasan mengapa Anda pulang lebih awal.'),
+                                            const SizedBox(height: 16),
+                                            TextField(
+                                              controller: textController,
+                                              maxLines: 3,
+                                              decoration: InputDecoration(
+                                                hintText: 'Contoh: Ada urusan keluarga...',
+                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Get.back(result: false),
+                                            child: Text('Batal', style: TextStyle(color: Colors.grey.shade600)),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              if (textController.text.trim().isEmpty) {
+                                                Get.snackbar(
+                                                  'Peringatan', 
+                                                  'Alasan pulang cepat wajib diisi!',
+                                                  snackPosition: SnackPosition.BOTTOM,
+                                                  backgroundColor: Colors.orange.shade100,
+                                                  colorText: Colors.orange.shade800,
+                                                );
+                                                return;
+                                              }
+                                              Get.back(result: true);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: AppColors.primary,
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                            ),
+                                            child: const Text('Lanjutkan'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (result == true) {
+                                      controller.alasanPulangCepat.value = textController.text.trim();
+                                      controller.resetScanner();
+                                      Get.toNamed(Routes.PRESENSI);
+                                    }
+                                  } else {
+                                    // Pulang normal
+                                    final result = await ConfirmationDialog.show(
+                                      context,
+                                      message: 'Anda akan melakukan presensi pulang?',
+                                    );
+                                    if (result == true) {
+                                      controller.alasanPulangCepat.value = null;
+                                      controller.resetScanner();
+                                      Get.toNamed(Routes.PRESENSI);
+                                    }
                                   }
                                 }
                               : null,

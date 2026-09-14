@@ -26,6 +26,8 @@ class PresensiController extends GetxController {
   final jamPulang = RxnString();
   final isCheckingToday = false.obs;
 
+  // Alasan pulang cepat
+  final alasanPulangCepat = RxnString();
 
   @override
   void onInit() {
@@ -129,6 +131,7 @@ class PresensiController extends GetxController {
         qrToken: qrToken,
         latitude: lat,
         longitude: lng,
+        alasanPulang: alasanPulangCepat.value,
       );
 
       isLoading.value = false;
@@ -136,6 +139,9 @@ class PresensiController extends GetxController {
       if (response.isOk && response.body is Map && response.body['success'] == true) {
         final message = response.body['message'] ?? 'Presensi berhasil dicatat.';
         Get.back(); // Tutup scanner kamera
+        // Reset alasan pulang cepat jika berhasil
+        alasanPulangCepat.value = null;
+
         // Show success notification after scanner page is fully closed
         Future.delayed(const Duration(milliseconds: 500), () {
           AppSnackbar.showSuccess('Berhasil', message);
