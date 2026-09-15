@@ -20,7 +20,7 @@ class TugasFormController extends GetxController {
   final penerimaTugasController = TextEditingController();
 
   final mediaTugas = 'Github'.obs;
-  
+
   final mediaOptions = [
     'Github',
     'Gitlab',
@@ -38,17 +38,17 @@ class TugasFormController extends GetxController {
     if (args is TugasModel) {
       isEdit.value = true;
       editId = args.id;
-      
+
       judulController.text = args.judul;
       pemberiTugasController.text = args.pemberiTugas;
       penerimaTugasController.text = args.penerimaTugas;
       deskripsiController.text = args.deskripsi;
       linkController.text = args.linkTugas;
-      
+
       if (mediaOptions.contains(args.media)) {
         mediaTugas.value = args.media;
       }
-      
+
       // Note: we can't easily parse formatted date "10 September 2026" back to DateTime,
       // so we just leave it as DateTime.now() or we could try parsing it.
       // But let's keep it simple for now.
@@ -69,8 +69,18 @@ class TugasFormController extends GetxController {
 
   String formatDate(DateTime date) {
     final months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -88,9 +98,11 @@ class TugasFormController extends GetxController {
       AppSnackbar.showError('Error', 'Judul tugas wajib diisi!');
       return;
     }
-    
-    if (pemberiTugasController.text.trim().isEmpty || penerimaTugasController.text.trim().isEmpty) {
-      AppSnackbar.showError('Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
+
+    if (pemberiTugasController.text.trim().isEmpty ||
+        penerimaTugasController.text.trim().isEmpty) {
+      AppSnackbar.showError(
+          'Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
       return;
     }
 
@@ -100,16 +112,18 @@ class TugasFormController extends GetxController {
         const Center(child: CircularProgressIndicator(color: Colors.white)),
         barrierDismissible: false,
       );
-      
-      final pesertaId = StorageService.to.pesertaData.value?['id']?.toString() ?? '';
-      
+
+      final pesertaId =
+          StorageService.to.pesertaData.value?['id']?.toString() ?? '';
+
       final formData = FormData({
         'peserta_id': pesertaId,
         'judul': judulController.text.trim(),
         'pemberi_tugas': pemberiTugasController.text.trim(),
         'penerima_tugas': penerimaTugasController.text.trim(),
         'deskripsi': deskripsiController.text.trim(),
-        'tanggal_tugas': '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}',
+        'tanggal_tugas':
+            '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}',
         'media': mediaTugas.value,
         'link_tugas': linkController.text.trim(),
       });
@@ -117,23 +131,26 @@ class TugasFormController extends GetxController {
       if (selectedImage.value != null) {
         formData.files.add(MapEntry(
           'file_lampiran',
-          MultipartFile(selectedImage.value!.path, filename: selectedImage.value!.path.split('/').last),
+          MultipartFile(File(selectedImage.value!.path).readAsBytesSync(),
+              filename: selectedImage.value!.path.split('/').last),
         ));
       }
 
-      final response = isEdit.value 
+      final response = isEdit.value
           ? await ApiService.to.editTugas(editId, formData)
           : await ApiService.to.addTugas(formData);
-          
+
       // Tutup loading dialog
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-      
+
       if (response.isOk && response.body['success'] == true) {
         Get.until((route) => route.settings.name == '/tugas');
         // Show success notification after navigation settles
-        final successMsg = isEdit.value ? 'Tugas berhasil diperbarui' : 'Tugas berhasil ditambahkan';
+        final successMsg = isEdit.value
+            ? 'Tugas berhasil diperbarui'
+            : 'Tugas berhasil ditambahkan';
         Future.delayed(const Duration(milliseconds: 500), () {
           AppSnackbar.showSuccess('Sukses', successMsg);
         });

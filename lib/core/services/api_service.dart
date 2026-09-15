@@ -107,13 +107,13 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
-    
+
     final payload = <String, dynamic>{
       'qr_token': qrToken,
       'latitude': latitude,
       'longitude': longitude,
     };
-    
+
     if (alasanPulang != null && alasanPulang.trim().isNotEmpty) {
       payload['alasan_pulang'] = alasanPulang.trim();
     }
@@ -164,7 +164,8 @@ class ApiService extends GetConnect implements GetxService {
   }) async {
     final query = <String, String>{};
     if (filter != null && filter.isNotEmpty) query['filter'] = filter;
-    if (startDate != null && startDate.isNotEmpty) query['start_date'] = startDate;
+    if (startDate != null && startDate.isNotEmpty)
+      query['start_date'] = startDate;
     if (endDate != null && endDate.isNotEmpty) query['end_date'] = endDate;
     if (tanggal != null && tanggal.isNotEmpty) query['tanggal'] = tanggal;
 
@@ -185,12 +186,13 @@ class ApiService extends GetConnect implements GetxService {
     if (lampiranPath != null && lampiranPath.isNotEmpty) {
       final file = File(lampiranPath);
       final filename = lampiranPath.split(Platform.pathSeparator).last;
+      final bytes = file.readAsBytesSync();
       final form = FormData({
         'tanggal': tanggal,
         'kategori': kategori,
         'judul': judul,
         'detail': detail,
-        'lampiran': MultipartFile(file, filename: filename),
+        'lampiran': MultipartFile(bytes, filename: filename),
       });
       return await post(ApiEndpoints.logbook, form);
     } else {

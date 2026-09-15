@@ -80,7 +80,9 @@ class IzinController extends GetxController {
       if (lampiranPath.value != null && lampiranPath.value!.isNotEmpty) {
         final filePath = lampiranPath.value!;
         final filename = filePath.split(Platform.pathSeparator).last;
-        formMap['bukti_foto'] = MultipartFile(File(filePath), filename: filename);
+        final file = File(filePath);
+        final bytes = file.readAsBytesSync();
+        formMap['bukti_foto'] = MultipartFile(bytes, filename: filename);
       }
 
       final formData = FormData(formMap);
