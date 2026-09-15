@@ -14,7 +14,7 @@ class InformasiView extends GetView<InformasiController> {
       appBar: const CustomAppBar(title: 'Informasi'),
       body: Column(
         children: [
-          _buildSearchBar(),
+          _buildSearchBar(context),
           Expanded(
             child: Container(
               width: double.infinity,
@@ -71,8 +71,9 @@ class InformasiView extends GetView<InformasiController> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
