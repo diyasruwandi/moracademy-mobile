@@ -11,10 +11,29 @@ class ApiService extends GetConnect implements GetxService {
     return Get.find<ApiService>();
   }
 
+  // Client khusus untuk upload file agar tidak terkena bug modifier GetConnect pada FormData
+  final GetConnect _uploadClient = GetConnect();
+
+  Map<String, String> get _authHeaders {
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+    };
+    if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
+      headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
+    }
+    return headers;
+  }
+
   @override
   void onInit() {
     httpClient.baseUrl = ApiEndpoints.baseUrl;
     httpClient.timeout = const Duration(
+        seconds:
+            60); // Diperpanjang agar tidak timeout jika koneksi email lambat
+
+    _uploadClient.baseUrl = ApiEndpoints.baseUrl;
+    _uploadClient.timeout = const Duration(
         seconds:
             60); // Diperpanjang agar tidak timeout jika koneksi email lambat
 
@@ -82,13 +101,15 @@ class ApiService extends GetConnect implements GetxService {
   }
 
   /// Tambah tugas baru (mendukung upload file_lampiran)
-  Future<Response> addTugas(FormData data) async {
-    return await post(ApiEndpoints.tugas, data);
+  Future<Response> addTugas(dynamic data) async {
+    return await _uploadClient.post(ApiEndpoints.tugas, data,
+        headers: _authHeaders);
   }
 
   /// Memperbarui tugas yang sudah ada
-  Future<Response> editTugas(String id, FormData data) async {
-    return await post('${ApiEndpoints.tugas}/update/$id', data);
+  Future<Response> editTugas(String id, dynamic data) async {
+    return await _uploadClient.post('${ApiEndpoints.tugas}/update/$id', data,
+        headers: _authHeaders);
   }
 
   /// Scan QR Code Presensi (dikirim ke QR Moracademy / Port 8001)
@@ -107,13 +128,13 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
-    
+
     final payload = <String, dynamic>{
       'qr_token': qrToken,
       'latitude': latitude,
       'longitude': longitude,
     };
-    
+
     if (alasanPulang != null && alasanPulang.trim().isNotEmpty) {
       payload['alasan_pulang'] = alasanPulang.trim();
     }
@@ -143,7 +164,8 @@ class ApiService extends GetConnect implements GetxService {
 
   /// Mengajukan izin (Sakit, Izin Pribadi, dll)
   Future<Response> ajukanIzin(FormData data) async {
-    return await post(ApiEndpoints.presensiIzin, data);
+    return await _uploadClient.post(ApiEndpoints.presensiIzin, data,
+        headers: _authHeaders);
   }
 
   /// Mengambil riwayat presensi (bulanan) dari backend utama
@@ -164,7 +186,8 @@ class ApiService extends GetConnect implements GetxService {
   }) async {
     final query = <String, String>{};
     if (filter != null && filter.isNotEmpty) query['filter'] = filter;
-    if (startDate != null && startDate.isNotEmpty) query['start_date'] = startDate;
+    if (startDate != null && startDate.isNotEmpty)
+      query['start_date'] = startDate;
     if (endDate != null && endDate.isNotEmpty) query['end_date'] = endDate;
     if (tanggal != null && tanggal.isNotEmpty) query['tanggal'] = tanggal;
 
@@ -185,14 +208,16 @@ class ApiService extends GetConnect implements GetxService {
     if (lampiranPath != null && lampiranPath.isNotEmpty) {
       final file = File(lampiranPath);
       final filename = lampiranPath.split(Platform.pathSeparator).last;
+      final bytes = file.readAsBytesSync();
       final form = FormData({
         'tanggal': tanggal,
         'kategori': kategori,
         'judul': judul,
         'detail': detail,
-        'lampiran': MultipartFile(file, filename: filename),
+        'lampiran': MultipartFile(bytes, filename: filename),
       });
-      return await post(ApiEndpoints.logbook, form);
+      return await _uploadClient.post(ApiEndpoints.logbook, form,
+          headers: _authHeaders);
     } else {
       return await post(
         ApiEndpoints.logbook,

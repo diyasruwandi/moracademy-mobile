@@ -500,10 +500,11 @@ class LogbookView extends GetView<LogbookController> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        logbook.lampiranUrl!,
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          logbook.lampiranUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
@@ -528,6 +529,7 @@ class LogbookView extends GetView<LogbookController> {
                         },
                       ),
                     ),
+                   ),
                   ],
                   const SizedBox(height: 24),
                 ],

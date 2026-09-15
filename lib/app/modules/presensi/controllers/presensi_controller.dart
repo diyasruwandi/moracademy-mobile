@@ -25,7 +25,7 @@ class PresensiController extends GetxController {
   final jamMasuk = RxnString();
   final jamPulang = RxnString();
   final isCheckingToday = false.obs;
-  
+
   // Jadwal dinamis
   final hasJadwal = true.obs;
   final jadwalMasuk = RxnString();
@@ -46,7 +46,9 @@ class PresensiController extends GetxController {
     isCheckingToday.value = true;
     try {
       final response = await ApiService.to.checkTodayPresensi();
-      if (response.isOk && response.body is Map && response.body['success'] == true) {
+      if (response.isOk &&
+          response.body is Map &&
+          response.body['success'] == true) {
         final data = response.body['data'];
         if (data is Map) {
           hasMasuk.value = data['has_masuk'] == true;
@@ -56,7 +58,7 @@ class PresensiController extends GetxController {
 
           jamMasuk.value = data['jam_masuk']?.toString();
           jamPulang.value = data['jam_pulang']?.toString();
-          
+
           hasJadwal.value = data['has_jadwal'] ?? true;
           jadwalMasuk.value = data['jadwal_masuk']?.toString();
           jadwalPulang.value = data['jadwal_pulang']?.toString();
@@ -146,8 +148,11 @@ class PresensiController extends GetxController {
 
       isLoading.value = false;
 
-      if (response.isOk && response.body is Map && response.body['success'] == true) {
-        final message = response.body['message'] ?? 'Presensi berhasil dicatat.';
+      if (response.isOk &&
+          response.body is Map &&
+          response.body['success'] == true) {
+        final message =
+            response.body['message'] ?? 'Presensi berhasil dicatat.';
         Get.back(); // Tutup scanner kamera
         // Reset alasan pulang cepat jika berhasil
         alasanPulangCepat.value = null;
@@ -158,7 +163,7 @@ class PresensiController extends GetxController {
         });
         // Refresh status presensi
         checkTodayStatus();
-        
+
         // Refresh riwayat if the controller is active
         if (Get.isRegistered<RiwayatController>()) {
           Get.find<RiwayatController>().loadData();
@@ -174,7 +179,8 @@ class PresensiController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       hasScannedQr.value = false;
-      AppSnackbar.showError('Error', 'Gagal memproses presensi: ${e.toString()}');
+      AppSnackbar.showError(
+          'Error', 'Gagal memproses presensi: ${e.toString()}');
     }
   }
 }
