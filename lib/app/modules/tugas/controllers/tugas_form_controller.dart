@@ -20,7 +20,7 @@ class TugasFormController extends GetxController {
   final penerimaTugasController = TextEditingController();
 
   final mediaTugas = 'Github'.obs;
-
+  
   final mediaOptions = [
     'Github',
     'Gitlab',
@@ -38,17 +38,17 @@ class TugasFormController extends GetxController {
     if (args is TugasModel) {
       isEdit.value = true;
       editId = args.id;
-
+      
       judulController.text = args.judul;
       pemberiTugasController.text = args.pemberiTugas;
       penerimaTugasController.text = args.penerimaTugas;
       deskripsiController.text = args.deskripsi;
       linkController.text = args.linkTugas;
-
+      
       if (mediaOptions.contains(args.media)) {
         mediaTugas.value = args.media;
       }
-
+      
       // Note: we can't easily parse formatted date "10 September 2026" back to DateTime,
       // so we just leave it as DateTime.now() or we could try parsing it.
       // But let's keep it simple for now.
@@ -69,18 +69,8 @@ class TugasFormController extends GetxController {
 
   String formatDate(DateTime date) {
     final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember'
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -89,8 +79,8 @@ class TugasFormController extends GetxController {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 60,
-      maxWidth: 1024,
+      imageQuality: 70, // Kompres ukuran file gambar
+      maxWidth: 1024,   // Batasi lebar gambar agar tidak terlalu besar
     );
     if (pickedFile != null) {
       selectedImage.value = File(pickedFile.path);
@@ -102,11 +92,9 @@ class TugasFormController extends GetxController {
       AppSnackbar.showError('Error', 'Judul tugas wajib diisi!');
       return;
     }
-
-    if (pemberiTugasController.text.trim().isEmpty ||
-        penerimaTugasController.text.trim().isEmpty) {
-      AppSnackbar.showError(
-          'Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
+    
+    if (pemberiTugasController.text.trim().isEmpty || penerimaTugasController.text.trim().isEmpty) {
+      AppSnackbar.showError('Error', 'Pemberi tugas dan penerima tugas wajib diisi!');
       return;
     }
 
@@ -116,60 +104,46 @@ class TugasFormController extends GetxController {
         const Center(child: CircularProgressIndicator(color: Colors.white)),
         barrierDismissible: false,
       );
-
-      final pesertaId =
-          StorageService.to.pesertaData.value?['id']?.toString() ?? '';
-
-      final map = <String, dynamic>{
+      
+      final pesertaId = StorageService.to.pesertaData.value?['id']?.toString() ?? '';
+      
+      // Auto-prefix link dengan https:// jika user lupa mengetiknya
+      String finalLink = linkController.text.trim();
+      if (finalLink.isNotEmpty && !finalLink.startsWith('http://') && !finalLink.startsWith('https://')) {
+        finalLink = 'https://$finalLink';
+      }
+      
+      final formData = FormData({
         'peserta_id': pesertaId,
         'judul': judulController.text.trim(),
         'pemberi_tugas': pemberiTugasController.text.trim(),
         'penerima_tugas': penerimaTugasController.text.trim(),
-      };
-
-      final desc = deskripsiController.text.trim();
-      if (desc.isNotEmpty) map['deskripsi'] = desc;
-
-      map['tanggal_tugas'] =
-          '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}';
-
-      final media = mediaTugas.value;
-      if (media.isNotEmpty) map['media'] = media;
-
-      final link = linkController.text.trim();
-      if (link.isNotEmpty) map['link_tugas'] = link;
-
-      Response response;
+        'deskripsi': deskripsiController.text.trim(),
+        'tanggal_tugas': '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}',
+        'media': mediaTugas.value,
+        'link_tugas': finalLink,
+      });
 
       if (selectedImage.value != null) {
-        map['file_lampiran'] = MultipartFile(
-          File(selectedImage.value!.path).readAsBytesSync(),
-          filename: selectedImage.value!.path.split('/').last,
-        );
-        final formData = FormData(map);
-        response = isEdit.value
-            ? await ApiService.to.editTugas(editId, formData)
-            : await ApiService.to.addTugas(formData);
-      } else {
-        response = isEdit.value
-            ? await ApiService.to.editTugas(editId, map as dynamic)
-            : await ApiService.to.addTugas(map as dynamic);
+        formData.files.add(MapEntry(
+          'file_lampiran',
+          MultipartFile(selectedImage.value!.path, filename: selectedImage.value!.path.split('/').last),
+        ));
       }
 
-      debugPrint(
-          'DEBUG TUGAS: code=${response.statusCode}, text=${response.statusText}, hasError=${response.hasError}, body=${response.body}');
-
+      final response = isEdit.value 
+          ? await ApiService.to.editTugas(editId, formData)
+          : await ApiService.to.addTugas(formData);
+          
       // Tutup loading dialog
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
-
+      
       if (response.isOk && response.body['success'] == true) {
         Get.until((route) => route.settings.name == '/tugas');
         // Show success notification after navigation settles
-        final successMsg = isEdit.value
-            ? 'Tugas berhasil diperbarui'
-            : 'Tugas berhasil ditambahkan';
+        final successMsg = isEdit.value ? 'Tugas berhasil diperbarui' : 'Tugas berhasil ditambahkan';
         Future.delayed(const Duration(milliseconds: 500), () {
           AppSnackbar.showSuccess('Sukses', successMsg);
         });
