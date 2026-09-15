@@ -39,7 +39,12 @@ class IzinController extends GetxController {
   }
 
   Future<void> pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 60,
+      maxWidth: 1024,
+    );
     if (pickedFile != null) {
       lampiranPath.value = pickedFile.path;
     }
@@ -47,17 +52,19 @@ class IzinController extends GetxController {
 
   Future<void> ajukanIzin() async {
     if (tanggalMulai.value == null || tanggalSelesai.value == null) {
-      AppSnackbar.showWarning('Peringatan', 'Tanggal mulai dan selesai harus diisi!');
+      AppSnackbar.showWarning(
+          'Peringatan', 'Tanggal mulai dan selesai harus diisi!');
       return;
     }
 
     if (tanggalSelesai.value!.isBefore(tanggalMulai.value!)) {
-      AppSnackbar.showWarning('Peringatan', 'Tanggal selesai tidak boleh sebelum tanggal mulai');
+      AppSnackbar.showWarning(
+          'Peringatan', 'Tanggal selesai tidak boleh sebelum tanggal mulai');
       return;
     }
 
     isLoading.value = true;
-    
+
     // Show full screen loading
     Get.dialog(
       const Center(
@@ -67,8 +74,10 @@ class IzinController extends GetxController {
     );
 
     try {
-      final tglMulai = '${tanggalMulai.value!.year}-${tanggalMulai.value!.month.toString().padLeft(2, '0')}-${tanggalMulai.value!.day.toString().padLeft(2, '0')}';
-      final tglSelesai = '${tanggalSelesai.value!.year}-${tanggalSelesai.value!.month.toString().padLeft(2, '0')}-${tanggalSelesai.value!.day.toString().padLeft(2, '0')}';
+      final tglMulai =
+          '${tanggalMulai.value!.year}-${tanggalMulai.value!.month.toString().padLeft(2, '0')}-${tanggalMulai.value!.day.toString().padLeft(2, '0')}';
+      final tglSelesai =
+          '${tanggalSelesai.value!.year}-${tanggalSelesai.value!.month.toString().padLeft(2, '0')}-${tanggalSelesai.value!.day.toString().padLeft(2, '0')}';
 
       final formMap = <String, dynamic>{
         'jenis_izin': jenisIzin.value,

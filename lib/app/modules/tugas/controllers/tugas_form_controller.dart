@@ -87,7 +87,11 @@ class TugasFormController extends GetxController {
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 60,
+      maxWidth: 1024,
+    );
     if (pickedFile != null) {
       selectedImage.value = File(pickedFile.path);
     }
@@ -116,29 +120,44 @@ class TugasFormController extends GetxController {
       final pesertaId =
           StorageService.to.pesertaData.value?['id']?.toString() ?? '';
 
-      final formData = FormData({
+      final map = <String, dynamic>{
         'peserta_id': pesertaId,
         'judul': judulController.text.trim(),
         'pemberi_tugas': pemberiTugasController.text.trim(),
         'penerima_tugas': penerimaTugasController.text.trim(),
-        'deskripsi': deskripsiController.text.trim(),
-        'tanggal_tugas':
-            '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}',
-        'media': mediaTugas.value,
-        'link_tugas': linkController.text.trim(),
-      });
+      };
+
+      final desc = deskripsiController.text.trim();
+      if (desc.isNotEmpty) map['deskripsi'] = desc;
+
+      map['tanggal_tugas'] =
+          '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}';
+
+      final media = mediaTugas.value;
+      if (media.isNotEmpty) map['media'] = media;
+
+      final link = linkController.text.trim();
+      if (link.isNotEmpty) map['link_tugas'] = link;
+
+      Response response;
 
       if (selectedImage.value != null) {
-        formData.files.add(MapEntry(
-          'file_lampiran',
-          MultipartFile(File(selectedImage.value!.path).readAsBytesSync(),
-              filename: selectedImage.value!.path.split('/').last),
-        ));
+        map['file_lampiran'] = MultipartFile(
+          File(selectedImage.value!.path).readAsBytesSync(),
+          filename: selectedImage.value!.path.split('/').last,
+        );
+        final formData = FormData(map);
+        response = isEdit.value
+            ? await ApiService.to.editTugas(editId, formData)
+            : await ApiService.to.addTugas(formData);
+      } else {
+        response = isEdit.value
+            ? await ApiService.to.editTugas(editId, map as dynamic)
+            : await ApiService.to.addTugas(map as dynamic);
       }
 
-      final response = isEdit.value
-          ? await ApiService.to.editTugas(editId, formData)
-          : await ApiService.to.addTugas(formData);
+      debugPrint(
+          'DEBUG TUGAS: code=${response.statusCode}, text=${response.statusText}, hasError=${response.hasError}, body=${response.body}');
 
       // Tutup loading dialog
       if (Get.isDialogOpen ?? false) {
