@@ -187,7 +187,7 @@ class VerifikasiView extends GetView<PresensiController> {
                         final sedangIzin = controller.hasIzin.value;
                         final isLateDisabled = controller.isDisabledMasuk.value;
                         final adaJadwal = controller.hasJadwal.value;
-                        final canMasuk =
+                        final canMasuk = !controller.isCheckingToday.value && 
                             controller.isAllVerified.value && !sudahMasuk && !sedangIzin && !isLateDisabled && adaJadwal;
 
                         return ElevatedButton(
@@ -215,15 +215,17 @@ class VerifikasiView extends GetView<PresensiController> {
                             ),
                           ),
                           child: Text(
-                            !adaJadwal 
-                                ? 'Tidak Ada Jadwal Aktif'
-                                : sedangIzin
-                                    ? 'Tidak dapat presensi (Izin)'
-                                    : isLateDisabled 
-                                        ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
-                                        : sudahMasuk
-                                            ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
-                                            : 'Presensi masuk',
+                            controller.isCheckingToday.value
+                                ? 'Memeriksa status...'
+                                : !adaJadwal 
+                                    ? 'Tidak Ada Jadwal Aktif'
+                                    : sedangIzin
+                                        ? 'Tidak dapat presensi (Izin)'
+                                        : isLateDisabled 
+                                            ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
+                                            : sudahMasuk
+                                                ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
+                                                : 'Presensi masuk',
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         );
@@ -239,7 +241,8 @@ class VerifikasiView extends GetView<PresensiController> {
                         final sudahMasuk = controller.hasMasuk.value;
                         final sudahPulang = controller.hasPulang.value;
                         final sedangIzin = controller.hasIzin.value;
-                        final canPulang = controller.isAllVerified.value &&
+                        final canPulang = !controller.isCheckingToday.value && 
+                            controller.isAllVerified.value &&
                             sudahMasuk &&
                             !sudahPulang &&
                             !sedangIzin;
@@ -334,13 +337,16 @@ class VerifikasiView extends GetView<PresensiController> {
                             ),
                           ),
                           child: Text(
-                            sedangIzin
-                                ? 'Tidak dapat presensi (Izin)'
-                                : sudahPulang
-                                    ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
-                                    : 'Presensi pulang',
+                            controller.isCheckingToday.value
+                                ? 'Memeriksa status...'
+                                : sedangIzin
+                                    ? 'Tidak dapat presensi (Izin)'
+                                    : !sudahMasuk
+                                        ? 'Belum Masuk'
+                                        : sudahPulang
+                                            ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
+                                            : 'Presensi pulang',
                             style: const TextStyle(
-                              fontSize: 15,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
