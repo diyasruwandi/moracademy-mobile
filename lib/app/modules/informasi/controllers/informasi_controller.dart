@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class InformasiController extends GetxController {
   final searchController = ''.obs;
+  final searchTextController = TextEditingController();
   final isLoading = false.obs;
   final informations = <Map<String, String>>[
     {
@@ -27,6 +29,12 @@ class InformasiController extends GetxController {
     },
   ].obs;
 
+  @override
+  void onClose() {
+    searchTextController.dispose();
+    super.onClose();
+  }
+
   List<Map<String, String>> get filteredInformations {
     final query = searchController.value.trim().toLowerCase();
     if (query.isEmpty) return informations.toList();
@@ -38,7 +46,8 @@ class InformasiController extends GetxController {
     }).toList();
   }
 
-  void search(String query) {
-    searchController.value = query;
+  void search() {
+    searchController.value = searchTextController.text;
   }
 }
+
