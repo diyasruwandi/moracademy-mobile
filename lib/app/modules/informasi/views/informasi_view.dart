@@ -9,14 +9,12 @@ class InformasiView extends GetView<InformasiController> {
 
   @override
   Widget build(BuildContext context) {
-    final searchTextController = TextEditingController();
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'Informasi'),
       body: Column(
         children: [
-          _buildSearchBar(searchTextController),
+          _buildSearchBar(),
           Expanded(
             child: Container(
               width: double.infinity,
@@ -31,7 +29,7 @@ class InformasiView extends GetView<InformasiController> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.textHint.withValues(alpha: 0.3),
+                      color: AppColors.textHint.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -73,7 +71,7 @@ class InformasiView extends GetView<InformasiController> {
     );
   }
 
-  Widget _buildSearchBar(TextEditingController searchTextController) {
+  Widget _buildSearchBar() {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
@@ -92,7 +90,7 @@ class InformasiView extends GetView<InformasiController> {
         children: [
           Expanded(
             child: TextField(
-              controller: searchTextController,
+              controller: controller.searchTextController,
               decoration: const InputDecoration(
                 hintText: 'Cari',
                 hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
@@ -104,7 +102,7 @@ class InformasiView extends GetView<InformasiController> {
           SizedBox(
             height: 44,
             child: ElevatedButton(
-              onPressed: () => controller.search(searchTextController.text),
+              onPressed: () => controller.search(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
@@ -142,7 +140,7 @@ class InformasiView extends GetView<InformasiController> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

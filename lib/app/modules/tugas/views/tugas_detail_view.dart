@@ -146,10 +146,11 @@ class TugasDetailView extends GetView<TugasController> {
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () async {
-                    final uri = Uri.parse(tugas.linkTugas);
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri);
-                    } else {
+                    final link = tugas.linkTugas.startsWith('http') ? tugas.linkTugas : 'https://${tugas.linkTugas}';
+                    final uri = Uri.parse(link);
+                    try {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } catch (e) {
                       AppSnackbar.showError('Error', 'Tidak dapat membuka tautan');
                     }
                   },
