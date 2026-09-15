@@ -27,6 +27,7 @@ class PresensiController extends GetxController {
   final isCheckingToday = false.obs;
   
   // Jadwal dinamis
+  final hasJadwal = true.obs;
   final jadwalMasuk = RxnString();
   final jadwalPulang = RxnString();
   final isDisabledMasuk = false.obs;
@@ -56,6 +57,7 @@ class PresensiController extends GetxController {
           jamMasuk.value = data['jam_masuk']?.toString();
           jamPulang.value = data['jam_pulang']?.toString();
           
+          hasJadwal.value = data['has_jadwal'] ?? true;
           jadwalMasuk.value = data['jadwal_masuk']?.toString();
           jadwalPulang.value = data['jadwal_pulang']?.toString();
           isDisabledMasuk.value = data['is_disabled_masuk'] == true;
