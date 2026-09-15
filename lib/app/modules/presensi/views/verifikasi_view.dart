@@ -248,7 +248,10 @@ class VerifikasiView extends GetView<PresensiController> {
                           onPressed: canPulang
                               ? () async {
                                   final now = DateTime.now();
-                                  if (now.hour < 16) {
+                                  final nowTimeStr = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+                                  final jadwalPulangStr = controller.jadwalPulang.value ?? '16:00';
+                                  
+                                  if (nowTimeStr.compareTo(jadwalPulangStr) < 0) {
                                     // Pulang Cepat
                                     final textController = TextEditingController();
                                     final result = await Get.dialog<bool>(
@@ -259,7 +262,7 @@ class VerifikasiView extends GetView<PresensiController> {
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            const Text('Waktu saat ini masih sebelum jam 16:00. Silakan berikan alasan mengapa Anda pulang lebih awal.'),
+                                            Text('Jam pulang Anda hari ini adalah $jadwalPulangStr. Silakan berikan alasan jika Anda harus pulang lebih awal.'),
                                             const SizedBox(height: 16),
                                             TextField(
                                               controller: textController,
