@@ -77,7 +77,11 @@ class TugasFormController extends GetxController {
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70, // Kompres ukuran file gambar
+      maxWidth: 1024,   // Batasi lebar gambar agar tidak terlalu besar
+    );
     if (pickedFile != null) {
       selectedImage.value = File(pickedFile.path);
     }
@@ -103,6 +107,12 @@ class TugasFormController extends GetxController {
       
       final pesertaId = StorageService.to.pesertaData.value?['id']?.toString() ?? '';
       
+      // Auto-prefix link dengan https:// jika user lupa mengetiknya
+      String finalLink = linkController.text.trim();
+      if (finalLink.isNotEmpty && !finalLink.startsWith('http://') && !finalLink.startsWith('https://')) {
+        finalLink = 'https://$finalLink';
+      }
+      
       final formData = FormData({
         'peserta_id': pesertaId,
         'judul': judulController.text.trim(),
@@ -111,7 +121,7 @@ class TugasFormController extends GetxController {
         'deskripsi': deskripsiController.text.trim(),
         'tanggal_tugas': '${tanggalKegiatan.value.year}-${tanggalKegiatan.value.month.toString().padLeft(2, '0')}-${tanggalKegiatan.value.day.toString().padLeft(2, '0')}',
         'media': mediaTugas.value,
-        'link_tugas': linkController.text.trim(),
+        'link_tugas': finalLink,
       });
 
       if (selectedImage.value != null) {
