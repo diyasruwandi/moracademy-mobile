@@ -262,7 +262,7 @@ class VerifikasiView extends GetView<PresensiController> {
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text('Waktu saat ini masih sebelum jam $jadwalPulangStr. Silakan berikan alasan mengapa Anda pulang lebih awal.'),
+                                            Text('Jam pulang Anda hari ini adalah $jadwalPulangStr. Silakan berikan alasan jika Anda harus pulang lebih awal.'),
                                             const SizedBox(height: 16),
                                             TextField(
                                               controller: textController,
