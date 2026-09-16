@@ -78,7 +78,8 @@ class LogbookView extends GetView<LogbookController> {
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     children: [
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.2),
                       Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -122,7 +123,8 @@ class LogbookView extends GetView<LogbookController> {
                 color: AppColors.primary,
                 child: ListView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   itemCount: logbookList.length,
                   itemBuilder: (context, index) {
                     final logbook = logbookList[index];
@@ -211,7 +213,8 @@ class LogbookView extends GetView<LogbookController> {
     );
   }
 
-  Widget _buildLogbookItem(BuildContext context, LogbookModel logbook, bool isLast) {
+  Widget _buildLogbookItem(
+      BuildContext context, LogbookModel logbook, bool isLast) {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +261,8 @@ class LogbookView extends GetView<LogbookController> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+                  border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.6)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.03),
@@ -351,7 +355,8 @@ class LogbookView extends GetView<LogbookController> {
                     ),
 
                     // Lampiran Indicator / Preview
-                    if (logbook.lampiranUrl != null && logbook.lampiranUrl!.isNotEmpty) ...[
+                    if (logbook.lampiranUrl != null &&
+                        logbook.lampiranUrl!.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -429,7 +434,8 @@ class LogbookView extends GetView<LogbookController> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                        icon: const Icon(Icons.close,
+                            color: AppColors.textSecondary),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -438,7 +444,8 @@ class LogbookView extends GetView<LogbookController> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppColors.primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8),
@@ -454,7 +461,8 @@ class LogbookView extends GetView<LogbookController> {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.amber.shade50,
                           borderRadius: BorderRadius.circular(8),
@@ -489,7 +497,8 @@ class LogbookView extends GetView<LogbookController> {
                       height: 1.5,
                     ),
                   ),
-                  if (logbook.lampiranUrl != null && logbook.lampiranUrl!.isNotEmpty) ...[
+                  if (logbook.lampiranUrl != null &&
+                      logbook.lampiranUrl!.isNotEmpty) ...[
                     const Divider(height: 28),
                     const Text(
                       'Lampiran Bukti Kegiatan',
@@ -505,31 +514,33 @@ class LogbookView extends GetView<LogbookController> {
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
                           logbook.lampiranUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.broken_image, color: Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Lampiran: ${logbook.lampiran ?? "File lampiran"}',
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.broken_image,
+                                      color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Lampiran: ${logbook.lampiran ?? "File lampiran"}',
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                   ),
                   ],
                   const SizedBox(height: 24),
                 ],

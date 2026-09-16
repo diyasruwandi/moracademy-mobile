@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
 import '../constants/api_endpoints.dart';
 import 'storage_service.dart';
 
@@ -14,7 +15,7 @@ class ApiService extends GetConnect implements GetxService {
   // Client khusus untuk upload file agar tidak terkena bug modifier GetConnect pada FormData
   final GetConnect _uploadClient = GetConnect();
 
-  Map<String, String> get _authHeaders {
+  Future<Map<String, String>> get _authHeaders async {
     final headers = <String, String>{
       'Accept': 'application/json',
       'ngrok-skip-browser-warning': 'true',
@@ -22,32 +23,47 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
+
+    try {
+      final position = await Geolocator.getLastKnownPosition();
+      if (position != null) {
+        headers['X-Latitude'] = position.latitude.toString();
+        headers['X-Longitude'] = position.longitude.toString();
+      }
+    } catch (_) {}
+
     return headers;
   }
 
   @override
   void onInit() {
     httpClient.baseUrl = ApiEndpoints.baseUrl;
-    httpClient.timeout = const Duration(
-        seconds:
-            60); // Diperpanjang agar tidak timeout jika koneksi email lambat
+    httpClient.timeout = const Duration(seconds: 60);
 
     _uploadClient.baseUrl = ApiEndpoints.baseUrl;
-    _uploadClient.timeout = const Duration(
-        seconds:
-            60); // Diperpanjang agar tidak timeout jika koneksi email lambat
+    _uploadClient.timeout = const Duration(seconds: 60);
 
-    // Request Modifier (menambahkan header default dan Bearer token jika ada)
-    httpClient.addRequestModifier<dynamic>((request) {
+    httpClient.addRequestModifier<dynamic>((request) async {
       request.headers['Accept'] = 'application/json';
-      // Hapus baris Content-Type agar GetConnect otomatis mengatur multipart/form-data untuk FormData
       request.headers['ngrok-skip-browser-warning'] = 'true';
 
       if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
         request.headers['Authorization'] =
             'Bearer ${StorageService.to.token.value}';
       }
-      return request;
+
+      try {
+        final position = await Geolocator.getLastKnownPosition();
+        if (position != null) {
+          request.headers['X-Latitude'] = position.latitude.toString();
+          request.headers['X-Longitude'] = position.longitude.toString();
+        }
+      } catch (e) {
+        // Abaikan jika GPS tidak aktif/tidak ada izin
+      }
+
+      return request
+          as dynamic; // Cast to ensure it matches FutureOr<Request<dynamic>>
     });
 
     super.onInit();
@@ -103,13 +119,13 @@ class ApiService extends GetConnect implements GetxService {
   /// Tambah tugas baru (mendukung upload file_lampiran)
   Future<Response> addTugas(dynamic data) async {
     return await _uploadClient.post(ApiEndpoints.tugas, data,
-        headers: _authHeaders);
+        headers: await _authHeaders);
   }
 
   /// Memperbarui tugas yang sudah ada
   Future<Response> editTugas(String id, dynamic data) async {
     return await _uploadClient.post('${ApiEndpoints.tugas}/update/$id', data,
-        headers: _authHeaders);
+        headers: await _authHeaders);
   }
 
   /// Scan QR Code Presensi (dikirim ke QR Moracademy / Port 8001)
@@ -128,6 +144,9 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
+
+    headers['X-Latitude'] = latitude.toString();
+    headers['X-Longitude'] = longitude.toString();
 
     final payload = <String, dynamic>{
       'qr_token': qrToken,
@@ -158,6 +177,14 @@ class ApiService extends GetConnect implements GetxService {
     if (Get.isRegistered<StorageService>() && StorageService.to.isLoggedIn) {
       headers['Authorization'] = 'Bearer ${StorageService.to.token.value}';
     }
+
+    try {
+      final position = await Geolocator.getLastKnownPosition();
+      if (position != null) {
+        headers['X-Latitude'] = position.latitude.toString();
+        headers['X-Longitude'] = position.longitude.toString();
+      }
+    } catch (_) {}
     final qrClient = GetConnect(timeout: const Duration(seconds: 60));
     return await qrClient.get(url, headers: headers);
   }
@@ -165,7 +192,7 @@ class ApiService extends GetConnect implements GetxService {
   /// Mengajukan izin (Sakit, Izin Pribadi, dll)
   Future<Response> ajukanIzin(FormData data) async {
     return await _uploadClient.post(ApiEndpoints.presensiIzin, data,
-        headers: _authHeaders);
+        headers: await _authHeaders);
   }
 
   /// Mengambil riwayat presensi (bulanan) dari backend utama
@@ -217,7 +244,7 @@ class ApiService extends GetConnect implements GetxService {
         'lampiran': MultipartFile(bytes, filename: filename),
       });
       return await _uploadClient.post(ApiEndpoints.logbook, form,
-          headers: _authHeaders);
+          headers: await _authHeaders);
     } else {
       return await post(
         ApiEndpoints.logbook,

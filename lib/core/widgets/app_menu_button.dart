@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../../app/routes/app_pages.dart';
 import '../constants/app_colors.dart';
 import 'confirmation_dialog.dart';
+import '../services/api_service.dart';
+import '../services/storage_service.dart';
 
 class AppMenuButton extends StatelessWidget {
   const AppMenuButton({super.key});
@@ -44,6 +46,10 @@ class AppMenuButton extends StatelessWidget {
           message: 'Apakah anda yakin ingin keluar?',
         );
         if (result == true) {
+          try {
+            await ApiService.to.logout();
+          } catch (_) {}
+          await StorageService.to.clearSession();
           Get.offAllNamed(Routes.LOGIN);
         }
         break;

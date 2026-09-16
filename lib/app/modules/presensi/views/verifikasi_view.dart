@@ -57,305 +57,347 @@ class VerifikasiView extends GetView<PresensiController> {
               ),
               child: SingleChildScrollView(
                 child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(
-                    () => _verificationItem(
-                      Icons.location_on,
-                      controller.locationMessage.value,
-                      controller.isLocationVerified.value,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Obx(
+                      () => _verificationItem(
+                        Icons.location_on,
+                        controller.locationMessage.value,
+                        controller.isLocationVerified.value,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  _verificationItem(
-                    Icons.check_circle,
-                    'Jadwal kerja ditemukan',
-                    true,
-                  ),
-                  const SizedBox(height: 12),
-                  Obx(
-                    () => _verificationItem(
-                      Icons.my_location,
-                      controller.isRadiusValid.value
-                          ? 'Akurasi GPS memadai untuk presensi'
-                          : 'Akurasi GPS belum memadai (maks. 50 m)',
-                      controller.isRadiusValid.value,
+                    const SizedBox(height: 12),
+                    _verificationItem(
+                      Icons.check_circle,
+                      'Jadwal kerja ditemukan',
+                      true,
                     ),
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+                    Obx(
+                      () => _verificationItem(
+                        Icons.my_location,
+                        controller.isRadiusValid.value
+                            ? 'Akurasi GPS memadai untuk presensi'
+                            : 'Akurasi GPS belum memadai (maks. 50 m)',
+                        controller.isRadiusValid.value,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // Status presensi hari ini
-                  Obx(() {
-                    if (controller.isCheckingToday.value) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4),
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                    // Status presensi hari ini
+                    Obx(() {
+                      if (controller.isCheckingToday.value) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
 
-                    // Jika user sedang izin hari ini
-                    if (controller.hasIzin.value) {
-                      final status = controller.izinStatus.value ?? 'Izin';
-                      return Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.orange.shade200),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.event_busy, color: Colors.orange.shade700, size: 20),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                'Anda sedang izin hari ini (${status[0].toUpperCase()}${status.substring(1)})',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.orange.shade800,
+                      // Jika user sedang izin hari ini
+                      if (controller.hasIzin.value) {
+                        final status = controller.izinStatus.value ?? 'Izin';
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.orange.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.event_busy,
+                                  color: Colors.orange.shade700, size: 20),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Anda sedang izin hari ini (${status[0].toUpperCase()}${status.substring(1)})',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.orange.shade800,
+                                  ),
                                 ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final hasMasuk = controller.hasMasuk.value;
+                      final hasPulang = controller.hasPulang.value;
+
+                      if (!hasMasuk && !hasPulang) {
+                        return Center(
+                          child: Text(
+                            'Belum ada presensi hari ini',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (hasMasuk) ...[
+                            Icon(Icons.login,
+                                size: 16, color: Colors.green.shade700),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Masuk: ${controller.jamMasuk.value ?? "-"}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green.shade700,
                               ),
                             ),
                           ],
-                        ),
-                      );
-                    }
-
-                    final hasMasuk = controller.hasMasuk.value;
-                    final hasPulang = controller.hasPulang.value;
-
-                    if (!hasMasuk && !hasPulang) {
-                      return Center(
-                        child: Text(
-                          'Belum ada presensi hari ini',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (hasMasuk) ...[
-                          Icon(Icons.login, size: 16, color: Colors.green.shade700),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Masuk: ${controller.jamMasuk.value ?? "-"}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.green.shade700,
+                          if (hasMasuk && hasPulang) const SizedBox(width: 16),
+                          if (hasPulang) ...[
+                            Icon(Icons.logout,
+                                size: 16, color: Colors.orange.shade700),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Pulang: ${controller.jamPulang.value ?? "-"}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.orange.shade700,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
-                        if (hasMasuk && hasPulang) const SizedBox(width: 16),
-                        if (hasPulang) ...[
-                          Icon(Icons.logout, size: 16, color: Colors.orange.shade700),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Pulang: ${controller.jamPulang.value ?? "-"}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.orange.shade700,
-                            ),
-                          ),
-                        ],
-                      ],
-                    );
-                  }),
+                      );
+                    }),
 
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                  // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk DAN tidak izin DAN tidak disable
-                  SizedBox(
-                    width: double.infinity,
+                    // Tombol Presensi Masuk — aktif hanya jika lokasi valid DAN belum masuk DAN tidak izin DAN tidak disable
+                    SizedBox(
+                      width: double.infinity,
+                      child: Obx(
+                        () {
+                          final sudahMasuk = controller.hasMasuk.value;
+                          final sedangIzin = controller.hasIzin.value;
+                          final isLateDisabled =
+                              controller.isDisabledMasuk.value;
+                          final adaJadwal = controller.hasJadwal.value;
+                          final canMasuk = !controller.isCheckingToday.value &&
+                              controller.isAllVerified.value &&
+                              !sudahMasuk &&
+                              !sedangIzin &&
+                              !isLateDisabled &&
+                              adaJadwal;
 
-                    child: Obx(
-                      () {
-                        final sudahMasuk = controller.hasMasuk.value;
-                        final sedangIzin = controller.hasIzin.value;
-                        final isLateDisabled = controller.isDisabledMasuk.value;
-                        final adaJadwal = controller.hasJadwal.value;
-                        final canMasuk = !controller.isCheckingToday.value && 
-                            controller.isAllVerified.value && !sudahMasuk && !sedangIzin && !isLateDisabled && adaJadwal;
-
-                        return ElevatedButton(
-                          onPressed: canMasuk
-                              ? () async {
-                                  final result = await ConfirmationDialog.show(
-                                    context,
-                                    message:
-                                        'Anda akan melakukan presensi masuk?',
-                                  );
-                                  if (result == true) {
-                                    controller.resetScanner();
-                                    Get.toNamed(Routes.PRESENSI);
+                          return ElevatedButton(
+                            onPressed: canMasuk
+                                ? () async {
+                                    final result =
+                                        await ConfirmationDialog.show(
+                                      context,
+                                      message:
+                                          'Anda akan melakukan presensi masuk?',
+                                    );
+                                    if (result == true) {
+                                      controller.resetScanner();
+                                      Get.toNamed(Routes.PRESENSI);
+                                    }
                                   }
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey.shade300,
-                            disabledForegroundColor: Colors.grey.shade600,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              disabledBackgroundColor: Colors.grey.shade300,
+                              disabledForegroundColor: Colors.grey.shade600,
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            controller.isCheckingToday.value
-                                ? 'Memeriksa status...'
-                                : !adaJadwal 
-                                    ? 'Tidak Ada Jadwal Aktif'
-                                    : sedangIzin
-                                        ? 'Tidak dapat presensi (Izin)'
-                                        : isLateDisabled 
-                                            ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
-                                            : sudahMasuk
-                                                ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
-                                                : 'Presensi masuk',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        );
-                      },
+                            child: Text(
+                              controller.isCheckingToday.value
+                                  ? 'Memeriksa status...'
+                                  : !adaJadwal
+                                      ? 'Tidak Ada Jadwal Aktif'
+                                      : sedangIzin
+                                          ? 'Tidak dapat presensi (Izin)'
+                                          : isLateDisabled
+                                              ? 'Presensi Masuk Ditutup (Melewati Jam Pulang)'
+                                              : sudahMasuk
+                                                  ? 'Sudah Masuk (${controller.jamMasuk.value ?? ''})'
+                                                  : 'Presensi masuk',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Presensi Pulang button
-                  SizedBox(
-                    width: double.infinity,
-                    child: Obx(
-                      () {
-                        final sudahMasuk = controller.hasMasuk.value;
-                        final sudahPulang = controller.hasPulang.value;
-                        final sedangIzin = controller.hasIzin.value;
-                        final canPulang = !controller.isCheckingToday.value && 
-                            controller.isAllVerified.value &&
-                            sudahMasuk &&
-                            !sudahPulang &&
-                            !sedangIzin;
+                    const SizedBox(height: 8),
+                    // Presensi Pulang button
+                    SizedBox(
+                      width: double.infinity,
+                      child: Obx(
+                        () {
+                          final sudahMasuk = controller.hasMasuk.value;
+                          final sudahPulang = controller.hasPulang.value;
+                          final sedangIzin = controller.hasIzin.value;
+                          final canPulang = !controller.isCheckingToday.value &&
+                              controller.isAllVerified.value &&
+                              sudahMasuk &&
+                              !sudahPulang &&
+                              !sedangIzin;
 
-                        return ElevatedButton(
-                          onPressed: canPulang
-                              ? () async {
-                                  final now = DateTime.now();
-                                  final nowTimeStr = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
-                                  final jadwalPulangStr = controller.jadwalPulang.value ?? '16:00';
-                                  
-                                  if (nowTimeStr.compareTo(jadwalPulangStr) < 0) {
-                                    // Pulang Cepat
-                                    final textController = TextEditingController();
-                                    final result = await Get.dialog<bool>(
-                                      AlertDialog(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                        title: const Text('Pulang Cepat', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Jam pulang Anda hari ini adalah $jadwalPulangStr. Silakan berikan alasan jika Anda harus pulang lebih awal.'),
-                                            const SizedBox(height: 16),
-                                            TextField(
-                                              controller: textController,
-                                              maxLines: 3,
-                                              decoration: InputDecoration(
-                                                hintText: 'Contoh: Ada urusan keluarga...',
-                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          return ElevatedButton(
+                            onPressed: canPulang
+                                ? () async {
+                                    final now = DateTime.now();
+                                    final nowTimeStr =
+                                        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+                                    final jadwalPulangStr =
+                                        controller.jadwalPulang.value ??
+                                            '16:00';
+
+                                    if (nowTimeStr.compareTo(jadwalPulangStr) <
+                                        0) {
+                                      // Pulang Cepat
+                                      final textController =
+                                          TextEditingController();
+                                      final result = await Get.dialog<bool>(
+                                        AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16)),
+                                          title: const Text('Pulang Cepat',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  'Jam pulang Anda hari ini adalah $jadwalPulangStr. Silakan berikan alasan jika Anda harus pulang lebih awal.'),
+                                              const SizedBox(height: 16),
+                                              TextField(
+                                                controller: textController,
+                                                maxLines: 3,
+                                                decoration: InputDecoration(
+                                                  hintText:
+                                                      'Contoh: Ada urusan keluarga...',
+                                                  border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12)),
+                                                ),
                                               ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Get.back(result: false),
+                                              child: Text('Batal',
+                                                  style: TextStyle(
+                                                      color: Colors
+                                                          .grey.shade600)),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (textController.text
+                                                    .trim()
+                                                    .isEmpty) {
+                                                  Get.snackbar(
+                                                    'Peringatan',
+                                                    'Alasan pulang cepat wajib diisi!',
+                                                    snackPosition:
+                                                        SnackPosition.BOTTOM,
+                                                    backgroundColor:
+                                                        Colors.orange.shade100,
+                                                    colorText:
+                                                        Colors.orange.shade800,
+                                                  );
+                                                  return;
+                                                }
+                                                Get.back(result: true);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.primary,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8)),
+                                              ),
+                                              child: const Text('Lanjutkan'),
                                             ),
                                           ],
                                         ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Get.back(result: false),
-                                            child: Text('Batal', style: TextStyle(color: Colors.grey.shade600)),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              if (textController.text.trim().isEmpty) {
-                                                Get.snackbar(
-                                                  'Peringatan', 
-                                                  'Alasan pulang cepat wajib diisi!',
-                                                  snackPosition: SnackPosition.BOTTOM,
-                                                  backgroundColor: Colors.orange.shade100,
-                                                  colorText: Colors.orange.shade800,
-                                                );
-                                                return;
-                                              }
-                                              Get.back(result: true);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: AppColors.primary,
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                            ),
-                                            child: const Text('Lanjutkan'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                                      );
 
-                                    if (result == true) {
-                                      controller.alasanPulangCepat.value = textController.text.trim();
-                                      controller.resetScanner();
-                                      Get.toNamed(Routes.PRESENSI);
-                                    }
-                                  } else {
-                                    // Pulang normal
-                                    final result = await ConfirmationDialog.show(
-                                      context,
-                                      message: 'Anda akan melakukan presensi pulang?',
-                                    );
-                                    if (result == true) {
-                                      controller.alasanPulangCepat.value = null;
-                                      controller.resetScanner();
-                                      Get.toNamed(Routes.PRESENSI);
+                                      if (result == true) {
+                                        controller.alasanPulangCepat.value =
+                                            textController.text.trim();
+                                        controller.resetScanner();
+                                        Get.toNamed(Routes.PRESENSI);
+                                      }
+                                    } else {
+                                      // Pulang normal
+                                      final result =
+                                          await ConfirmationDialog.show(
+                                        context,
+                                        message:
+                                            'Anda akan melakukan presensi pulang?',
+                                      );
+                                      if (result == true) {
+                                        controller.alasanPulangCepat.value =
+                                            null;
+                                        controller.resetScanner();
+                                        Get.toNamed(Routes.PRESENSI);
+                                      }
                                     }
                                   }
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey.shade300,
-                            disabledForegroundColor: Colors.grey.shade600,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              disabledBackgroundColor: Colors.grey.shade300,
+                              disabledForegroundColor: Colors.grey.shade600,
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            controller.isCheckingToday.value
-                                ? 'Memeriksa status...'
-                                : sedangIzin
-                                    ? 'Tidak dapat presensi (Izin)'
-                                    : !sudahMasuk
-                                        ? 'Belum Masuk'
-                                        : sudahPulang
-                                            ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
-                                            : 'Presensi pulang',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
+                            child: Text(
+                              controller.isCheckingToday.value
+                                  ? 'Memeriksa status...'
+                                  : sedangIzin
+                                      ? 'Tidak dapat presensi (Izin)'
+                                      : !sudahMasuk
+                                          ? 'Belum Masuk'
+                                          : sudahPulang
+                                              ? 'Sudah Pulang (${controller.jamPulang.value ?? ''})'
+                                              : 'Presensi pulang',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               ),
             ),
           ),
