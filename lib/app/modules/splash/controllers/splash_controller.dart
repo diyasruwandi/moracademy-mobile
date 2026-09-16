@@ -53,7 +53,7 @@ class SplashController extends GetxController {
             "✅ [SPLASH] Sesi masih valid. Status Code: ${response.statusCode}");
       }
     } catch (e) {
-      print("🔴 [SPLASH] Error validasi sesi: $e");
+      print("🔴 [SPLASH] Error validasi: $e");
     }
   }
 }
