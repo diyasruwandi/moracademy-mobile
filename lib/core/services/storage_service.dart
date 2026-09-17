@@ -6,6 +6,9 @@ import '../../models/user_model.dart';
 class StorageService extends GetxService {
   static StorageService get to {
     if (!Get.isRegistered<StorageService>()) {
+      print(
+          "🚨 [WARNING] StorageService.to dipanggil SEBELUM diinisialisasi secara penuh!");
+      print(StackTrace.current);
       final service = StorageService();
       Get.put(service, permanent: true);
       service._initPrefs();
@@ -36,8 +39,13 @@ class StorageService extends GetxService {
   }
 
   void _loadStoredData() {
-    if (_prefs == null) return;
+    print("💾 [STORAGE] Loading stored data dari SharedPreferences...");
+    if (_prefs == null) {
+      print("⚠️ [STORAGE] _prefs masih null! Gagal memuat sesi.");
+      return;
+    }
     final savedToken = _prefs?.getString('auth_token') ?? '';
+    print("💾 [STORAGE] Membaca auth_token dari disk: '$savedToken'");
     token.value = savedToken;
 
     final userString = _prefs?.getString('user_data');

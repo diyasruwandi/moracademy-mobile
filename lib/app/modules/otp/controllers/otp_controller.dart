@@ -9,7 +9,7 @@ import '../../../../core/utils/app_snackbar.dart';
 class OtpController extends GetxController {
   final otpController = TextEditingController();
   final focusNode = FocusNode();
-  
+
   final email = ''.obs;
   final otpCode = ''.obs;
   final isLoading = false.obs;
@@ -62,9 +62,12 @@ class OtpController extends GetxController {
       final response = await ApiService.to.requestOtp(email.value);
       isLoading.value = false;
 
-      if (response.isOk && response.body is Map && response.body['success'] == true) {
+      if (response.isOk &&
+          response.body is Map &&
+          response.body['success'] == true) {
         startResendTimer();
-        final message = response.body['message'] ?? 'Kode OTP baru telah dikirimkan.';
+        final message =
+            response.body['message'] ?? 'Kode OTP baru telah dikirimkan.';
         AppSnackbar.showSuccess('Berhasil', message);
       } else {
         final errorMessage = ApiService.getErrorMessage(response);
@@ -79,7 +82,8 @@ class OtpController extends GetxController {
   Future<void> verifyOtp() async {
     final code = otpController.text.trim();
     if (code.length < 6) {
-      AppSnackbar.showWarning('Peringatan', 'Masukkan 6 digit kode OTP lengkap');
+      AppSnackbar.showWarning(
+          'Peringatan', 'Masukkan 6 digit kode OTP lengkap');
       return;
     }
 
@@ -89,7 +93,9 @@ class OtpController extends GetxController {
       final response = await ApiService.to.verifyOtp(email.value, code);
       isLoading.value = false;
 
-      if (response.isOk && response.body is Map && response.body['success'] == true) {
+      if (response.isOk &&
+          response.body is Map &&
+          response.body['success'] == true) {
         final data = response.body['data'];
         if (data is Map) {
           final token = data['token']?.toString() ?? '';
@@ -97,17 +103,19 @@ class OtpController extends GetxController {
           final peserta = data['peserta'] as Map<String, dynamic>?;
           final magang = data['magang'] as Map<String, dynamic>?;
 
-          if (Get.isRegistered<StorageService>()) {
-            await StorageService.to.saveAuthSession(
-              authToken: token,
-              user: user,
-              peserta: peserta,
-              magang: magang,
-            );
-          }
+          print(
+              "💾 [OTP] Menyimpan sesi ke SharedPreferences... Token: $token");
+          await StorageService.to.saveAuthSession(
+            authToken: token,
+            user: user,
+            peserta: peserta,
+            magang: magang,
+          );
+          print("✅ [OTP] Sesi berhasil disimpan!");
         }
 
-        final message = response.body['message'] ?? 'Verifikasi berhasil! Selamat datang.';
+        final message =
+            response.body['message'] ?? 'Verifikasi berhasil! Selamat datang.';
         // Navigate first to avoid race condition with snackbar overlay
         Get.offAllNamed(Routes.MAIN_NAV);
         // Show success notification after navigation completes
@@ -120,7 +128,8 @@ class OtpController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      AppSnackbar.showError('Error', 'Terjadi kesalahan koneksi: ${e.toString()}');
+      AppSnackbar.showError(
+          'Error', 'Terjadi kesalahan koneksi: ${e.toString()}');
     }
   }
 
@@ -136,4 +145,3 @@ class OtpController extends GetxController {
     super.onClose();
   }
 }
-

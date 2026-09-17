@@ -33,7 +33,9 @@ class ProfilController extends GetxController {
       final response = await ApiService.to.getMe();
       isLoading.value = false;
 
-      if (response.isOk && response.body is Map && response.body['success'] == true) {
+      if (response.isOk &&
+          response.body is Map &&
+          response.body['success'] == true) {
         final data = response.body['data'];
         if (data is Map) {
           final userMap = data['user'] as Map<String, dynamic>?;
@@ -57,7 +59,7 @@ class ProfilController extends GetxController {
     try {
       await ApiService.to.logout();
     } catch (_) {}
-    StorageService.to.clearSession();
+    await StorageService.to.clearSession();
     Get.offAllNamed(Routes.LOGIN);
   }
 }
