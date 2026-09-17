@@ -51,6 +51,8 @@ class IzinController extends GetxController {
   }
 
   Future<void> ajukanIzin() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (tanggalMulai.value == null || tanggalSelesai.value == null) {
       AppSnackbar.showWarning(
           'Peringatan', 'Tanggal mulai dan selesai harus diisi!');

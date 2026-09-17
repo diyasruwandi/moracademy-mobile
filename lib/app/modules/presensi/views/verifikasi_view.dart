@@ -373,8 +373,7 @@ class VerifikasiView extends GetView<PresensiController> {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.moracademy.mobile',
+          urlTemplate: 'http://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
         ),
         CircleLayer(
           circles: [
