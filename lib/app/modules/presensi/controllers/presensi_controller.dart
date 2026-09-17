@@ -99,6 +99,14 @@ class PresensiController extends GetxController {
           accuracy: LocationAccuracy.high,
         ),
       );
+
+      // Cek Fake GPS / Mock Location
+      if (position.isMocked) {
+        locationMessage.value = 'Terdeteksi penggunaan Fake GPS!';
+        isLocationLoading.value = false;
+        return;
+      }
+
       currentPosition.value = position;
       isLocationVerified.value = true;
       isRadiusValid.value = position.accuracy <= 50;
@@ -134,6 +142,13 @@ class PresensiController extends GetxController {
           );
           currentPosition.value = position;
         } catch (_) {}
+      }
+
+      if (position != null && position.isMocked) {
+        isLoading.value = false;
+        hasScannedQr.value = false;
+        AppSnackbar.showError('Gagal Presensi', 'Aplikasi mendeteksi penggunaan Fake GPS. Matikan Fake GPS Anda.');
+        return;
       }
 
       final lat = position?.latitude ?? -7.782819;
