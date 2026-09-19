@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/services/api_service.dart';
-import '../../../../core/services/storage_service.dart';
 import '../../../../core/utils/app_snackbar.dart';
 
 class IzinController extends GetxController {
@@ -15,7 +14,6 @@ class IzinController extends GetxController {
   final lampiranPath = RxnString();
 
   final jenisIzinOptions = ['Sakit', 'Izin Pribadi', 'Lainnya'];
-  final ImagePicker _picker = ImagePicker();
 
   Future<void> pickDate(BuildContext context, bool isStart) async {
     final picked = await showDatePicker(
