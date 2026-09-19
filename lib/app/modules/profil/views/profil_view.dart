@@ -80,26 +80,49 @@ class ProfilView extends GetView<ProfilController> {
                           // Avatar and name
                           Row(
                             children: [
-                              user.avatarUrl.isNotEmpty
-                                  ? CircleAvatar(
-                                      radius: 24,
-                                      backgroundColor: Colors.transparent,
-                                      backgroundImage: NetworkImage(user.avatarUrl),
-                                    )
-                                  : CircleAvatar(
-                                      radius: 24,
-                                      backgroundColor: const Color(0xFF00897B),
-                                      child: Text(
-                                        user.nama.isNotEmpty
-                                            ? user.nama[0].toUpperCase()
-                                            : 'M',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
+                              ClipOval(
+                                child: user.avatarUrl.isNotEmpty
+                                    ? Image.network(
+                                        user.avatarUrl,
+                                        width: 48,
+                                        height: 48,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            width: 48,
+                                            height: 48,
+                                            color: const Color(0xFF00897B),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              user.nama.isNotEmpty
+                                                  ? user.nama[0].toUpperCase()
+                                                  : 'M',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Container(
+                                        width: 48,
+                                        height: 48,
+                                        color: const Color(0xFF00897B),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          user.nama.isNotEmpty
+                                              ? user.nama[0].toUpperCase()
+                                              : 'M',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
                                       ),
-                                    ),
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
