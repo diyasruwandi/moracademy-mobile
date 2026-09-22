@@ -192,7 +192,10 @@ class OtpView extends GetView<OtpController> {
         // Visual 6-digit boxes
         GestureDetector(
           onTap: () {
-            controller.focusNode.requestFocus();
+            controller.focusNode.unfocus();
+            Future.delayed(const Duration(milliseconds: 50), () {
+              controller.focusNode.requestFocus();
+            });
           },
           child: Obx(() {
             final code = controller.otpCode.value;
