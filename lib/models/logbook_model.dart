@@ -32,9 +32,14 @@ class LogbookModel {
       judul: json['judul']?.toString() ?? '',
       detail: json['detail']?.toString() ?? '',
       lampiran: json['lampiran']?.toString(),
-      lampiranUrl: json['lampiran_url']?.toString() ?? json['lampiran_path']?.toString(),
-      presensiId: json['presensi_id'] != null ? int.tryParse(json['presensi_id'].toString()) : null,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
+      lampiranUrl:
+          json['lampiran_url']?.toString() ?? json['lampiran_path']?.toString(),
+      presensiId: json['presensi_id'] != null
+          ? int.tryParse(json['presensi_id'].toString())
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
     );
   }
 

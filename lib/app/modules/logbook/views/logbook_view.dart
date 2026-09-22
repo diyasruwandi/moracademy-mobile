@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/widgets/app_menu_button.dart';
+// import '../../../../core/widgets/app_menu_button.dart';
 import '../../../../models/logbook_model.dart';
 import 'package:moracademy_mobile/app/routes/app_pages.dart';
-import '../../main_nav/controllers/main_nav_controller.dart';
+// import '../../main_nav/controllers/main_nav_controller.dart';
 import '../controllers/logbook_controller.dart';
 
 class LogbookView extends GetView<LogbookController> {
@@ -14,31 +14,6 @@ class LogbookView extends GetView<LogbookController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () {
-            if (Get.isRegistered<MainNavController>()) {
-              Get.find<MainNavController>().changePage(0);
-            } else {
-              Get.back();
-            }
-          },
-        ),
-        title: const Text(
-          'Daily Logbook',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        actions: const [
-          AppMenuButton(),
-        ],
-      ),
       body: Column(
         children: [
           // Filter tabs

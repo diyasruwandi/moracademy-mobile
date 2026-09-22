@@ -49,11 +49,13 @@ class LogbookController extends GetxController {
         if (body is Map && body['data'] is List) {
           final List listData = body['data'];
           logbookList.value = listData
-              .map((item) => LogbookModel.fromJson(Map<String, dynamic>.from(item)))
+              .map((item) =>
+                  LogbookModel.fromJson(Map<String, dynamic>.from(item)))
               .toList();
         } else if (body is List) {
           logbookList.value = body
-              .map((item) => LogbookModel.fromJson(Map<String, dynamic>.from(item)))
+              .map((item) =>
+                  LogbookModel.fromJson(Map<String, dynamic>.from(item)))
               .toList();
         }
       } else {
@@ -86,7 +88,8 @@ class LogbookController extends GetxController {
     if (selectedFilter.value == 0) {
       // 0 = Minggu Ini (Senin sampai Minggu)
       final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
-      final endOfWeek = startOfWeek.add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
+      final endOfWeek = startOfWeek
+          .add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
 
       return logbookList.where((logbook) {
         final date = logbook.parsedDate;
@@ -107,8 +110,10 @@ class LogbookController extends GetxController {
         return logbookList.toList();
       }
 
-      final start = DateTime(range.start.year, range.start.month, range.start.day);
-      final end = DateTime(range.end.year, range.end.month, range.end.day, 23, 59, 59);
+      final start =
+          DateTime(range.start.year, range.start.month, range.start.day);
+      final end =
+          DateTime(range.end.year, range.end.month, range.end.day, 23, 59, 59);
 
       return logbookList.where((logbook) {
         final date = logbook.parsedDate;
@@ -233,7 +238,8 @@ class LogbookController extends GetxController {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
-      AppSnackbar.showError('Gagal Memilih Gambar', 'Terjadi kendala saat membuka file gambar: $e');
+      AppSnackbar.showError('Gagal Memilih Gambar',
+          'Terjadi kendala saat membuka file gambar: $e');
     }
   }
 
@@ -249,7 +255,8 @@ class LogbookController extends GetxController {
     final detail = detailController.text.trim();
 
     if (judul.isEmpty || detail.isEmpty) {
-      AppSnackbar.showWarning('Validasi Gagal', 'Judul dan detail kegiatan wajib diisi.');
+      AppSnackbar.showWarning(
+          'Validasi Gagal', 'Judul dan detail kegiatan wajib diisi.');
       return;
     }
 
@@ -271,13 +278,15 @@ class LogbookController extends GetxController {
         detail: detail,
         lampiranPath: selectedImagePath.value,
       );
-      
+
       // Tutup loading dialog
       if (Get.isDialogOpen ?? false) {
         Get.back();
       }
 
-      if (response.isOk && response.body != null && response.body['success'] == true) {
+      if (response.isOk &&
+          response.body != null &&
+          response.body['success'] == true) {
         // Reset form input
         judulController.clear();
         detailController.clear();
@@ -293,7 +302,8 @@ class LogbookController extends GetxController {
 
         // Show success notification after navigation settles
         Future.delayed(const Duration(milliseconds: 500), () {
-          AppSnackbar.showSuccess('Berhasil Disimpan', response.body['message'] ?? 'Catatan logbook berhasil dikirim.');
+          AppSnackbar.showSuccess('Berhasil Disimpan',
+              response.body['message'] ?? 'Catatan logbook berhasil dikirim.');
         });
       } else {
         final errorMsg = ApiService.getErrorMessage(response);
@@ -304,7 +314,8 @@ class LogbookController extends GetxController {
         Get.back();
       }
       debugPrint('Exception saat submit logbook: $e');
-      AppSnackbar.showError('Terjadi Kesalahan', 'Gagal mengirim data ke server: $e');
+      AppSnackbar.showError(
+          'Terjadi Kesalahan', 'Gagal mengirim data ke server: $e');
     } finally {
       isSubmitting.value = false;
     }
@@ -316,7 +327,8 @@ class LogbookController extends GetxController {
       final response = await ApiService.to.deleteLogbook(id);
       if (response.isOk) {
         logbookList.removeWhere((item) => item.id == id);
-        AppSnackbar.showSuccess('Berhasil', 'Catatan logbook berhasil dihapus.');
+        AppSnackbar.showSuccess(
+            'Berhasil', 'Catatan logbook berhasil dihapus.');
       } else {
         AppSnackbar.showError('Gagal', ApiService.getErrorMessage(response));
       }

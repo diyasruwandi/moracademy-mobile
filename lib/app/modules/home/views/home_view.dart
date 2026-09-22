@@ -52,10 +52,7 @@ class HomeView extends GetView<HomeController> {
                   const SizedBox(height: 20),
                   _buildBanner(),
                   const SizedBox(height: 16),
-                ]
-                    .animate(interval: 100.ms)
-                    .fade(duration: 500.ms)
-                    .slideY(
+                ].animate(interval: 100.ms).fade(duration: 500.ms).slideY(
                       begin: -0.2,
                       end: 0,
                       curve: Curves.easeOutCubic,
@@ -234,14 +231,14 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildStatsRow() {
     return Obx(() => Row(
-      children: [
-        _statCard('${controller.sisaHari.value}', 'Sisa Hari'),
-        const SizedBox(width: 12),
-        _statCard('${controller.jadwalHariIni.value}', 'Jadwal Hari\nIni'),
-        const SizedBox(width: 12),
-        _statCard('${controller.tepatWaktuPercent.value}%', 'Tepat Waktu'),
-      ],
-    ));
+          children: [
+            _statCard('${controller.sisaHari.value}', 'Sisa Hari'),
+            const SizedBox(width: 12),
+            _statCard('${controller.jadwalHariIni.value}', 'Jadwal Hari\nIni'),
+            const SizedBox(width: 12),
+            _statCard('${controller.tepatWaktuPercent.value}%', 'Tepat Waktu'),
+          ],
+        ));
   }
 
   Widget _statCard(String value, String label) {
@@ -328,12 +325,6 @@ class HomeView extends GetView<HomeController> {
         }),
         _menuItem(Icons.description_outlined, 'Izin', () {
           Get.toNamed(Routes.IZIN);
-        }),
-        _menuItem(Icons.checklist_outlined, 'Tugas', () {
-          Get.toNamed(Routes.TUGAS);
-        }),
-        _menuItem(Icons.info_outline, 'Informasi', () {
-          Get.toNamed(Routes.INFORMASI);
         }),
       ],
     );

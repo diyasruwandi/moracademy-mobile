@@ -4,7 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../app/routes/app_pages.dart';
 import '../../home/views/home_view.dart';
 import '../../riwayat/views/riwayat_view.dart';
-import '../../logbook/views/logbook_view.dart';
+import 'tugas_logbook_view.dart';
 import '../controllers/main_nav_controller.dart';
 
 class MainNavView extends GetView<MainNavController> {
@@ -15,7 +15,7 @@ class MainNavView extends GetView<MainNavController> {
     final pages = [
       const HomeView(),
       const RiwayatView(),
-      const LogbookView(),
+      const TugasLogbookView(),
     ];
 
     return Scaffold(
@@ -79,8 +79,8 @@ class MainNavView extends GetView<MainNavController> {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 16.0),
                       child: _navItem(
-                        icon: Icons.description_outlined,
-                        label: 'Logbook',
+                        icon: Icons.checklist_outlined,
+                        label: 'Aktivitas',
                         index: 2,
                         isSelected: controller.currentIndex.value == 2,
                       ),

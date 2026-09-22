@@ -139,7 +139,8 @@ class LogbookEntryView extends GetView<LogbookController> {
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: AppColors.border),
@@ -239,7 +240,8 @@ class LogbookEntryView extends GetView<LogbookController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              controller.selectedImageName.value ?? 'Foto Terpilih',
+                              controller.selectedImageName.value ??
+                                  'Foto Terpilih',
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -264,7 +266,8 @@ class LogbookEntryView extends GetView<LogbookController> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
+                        icon:
+                            const Icon(Icons.delete_outline, color: Colors.red),
                         onPressed: controller.removeImage,
                         tooltip: 'Hapus Lampiran',
                       ),
@@ -337,7 +340,8 @@ class LogbookEntryView extends GetView<LogbookController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+                    disabledBackgroundColor:
+                        AppColors.primary.withValues(alpha: 0.6),
                     minimumSize: const Size(double.infinity, 52),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -409,7 +413,8 @@ class LogbookEntryView extends GetView<LogbookController> {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.camera_alt, color: AppColors.primary),
+                    child:
+                        const Icon(Icons.camera_alt, color: AppColors.primary),
                   ),
                   title: const Text(
                     'Kamera',
@@ -429,7 +434,8 @@ class LogbookEntryView extends GetView<LogbookController> {
                       color: Colors.orange.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.photo_library, color: Colors.orange),
+                    child:
+                        const Icon(Icons.photo_library, color: Colors.orange),
                   ),
                   title: const Text(
                     'Galeri Foto',

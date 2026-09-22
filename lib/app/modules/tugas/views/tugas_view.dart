@@ -12,25 +12,10 @@ class TugasView extends GetView<TugasController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Tugas Harian',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-      ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary));
         }
 
         if (controller.tugasList.isEmpty) {
@@ -59,7 +44,8 @@ class TugasView extends GetView<TugasController> {
             itemCount: controller.tugasList.length,
             itemBuilder: (context, index) {
               final tugas = controller.tugasList[index];
-              return _buildTaskItem(tugas, index == controller.tugasList.length - 1);
+              return _buildTaskItem(
+                  tugas, index == controller.tugasList.length - 1);
             },
           ),
         );
@@ -129,13 +115,18 @@ class TugasView extends GetView<TugasController> {
                     // From → To badges
                     Row(
                       children: [
-                        _badge(tugas.tanggalTugas, AppColors.primary.withValues(alpha: 0.1), AppColors.primary),
+                        _badge(
+                            tugas.tanggalTugas,
+                            AppColors.primary.withValues(alpha: 0.1),
+                            AppColors.primary),
                         if (tugas.media.isNotEmpty) ...[
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Icon(Icons.circle, size: 4, color: AppColors.textHint),
+                            child: Icon(Icons.circle,
+                                size: 4, color: AppColors.textHint),
                           ),
-                          _badge(tugas.media, const Color(0xFFFFF3E0), const Color(0xFFE65100)),
+                          _badge(tugas.media, const Color(0xFFFFF3E0),
+                              const Color(0xFFE65100)),
                         ],
                       ],
                     ),
@@ -156,7 +147,10 @@ class TugasView extends GetView<TugasController> {
                         Expanded(
                           child: Text(
                             'Dari: ${tugas.pemberiTugas.isEmpty ? '-' : tugas.pemberiTugas}',
-                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -165,7 +159,10 @@ class TugasView extends GetView<TugasController> {
                         Expanded(
                           child: Text(
                             'Ke: ${tugas.penerimaTugas.isEmpty ? '-' : tugas.penerimaTugas}',
-                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -175,7 +172,9 @@ class TugasView extends GetView<TugasController> {
                     const SizedBox(height: 8),
                     // Description
                     Text(
-                      tugas.deskripsi.isEmpty ? 'Tidak ada deskripsi' : tugas.deskripsi,
+                      tugas.deskripsi.isEmpty
+                          ? 'Tidak ada deskripsi'
+                          : tugas.deskripsi,
                       style: const TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
