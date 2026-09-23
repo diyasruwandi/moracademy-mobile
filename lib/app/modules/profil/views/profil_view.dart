@@ -14,8 +14,12 @@ class ProfilView extends GetView<ProfilController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'Profil'),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: RefreshIndicator(
+        onRefresh: controller.refreshProfile,
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
         child: Obx(() {
           final user = controller.user.value;
           return Column(
@@ -218,6 +222,7 @@ class ProfilView extends GetView<ProfilController> {
             ],
           );
         }),
+        ),
       ),
     );
   }
