@@ -59,4 +59,7 @@ class ApiEndpoints {
 
   // Logbook Endpoints (Port 8000 / Backend Utama)
   static const String logbook = '/logbook';
+
+  // Informasi Magang
+  static const String informasiMagang = '/informasi-magang';
 }

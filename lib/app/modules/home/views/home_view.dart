@@ -366,7 +366,9 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildBanner() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Get.toNamed(Routes.INFORMASI);
+      },
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
@@ -385,7 +387,7 @@ class HomeView extends GetView<HomeController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Panduan & Laporan Magang',
+                    'INFORMASI MAGANG',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -394,7 +396,7 @@ class HomeView extends GetView<HomeController> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Dokumen & Modul Onboarding 2026',
+                    'Lihat informasi lebih banyak',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.8),

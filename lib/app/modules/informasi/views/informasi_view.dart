@@ -13,11 +13,11 @@ class InformasiView extends GetView<InformasiController> {
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'Informasi'),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildSearchBar(context),
           Expanded(
             child: Container(
-              width: double.infinity,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -73,9 +73,7 @@ class InformasiView extends GetView<InformasiController> {
 
   Widget _buildSearchBar(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
@@ -87,39 +85,20 @@ class InformasiView extends GetView<InformasiController> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller.searchTextController,
-              decoration: const InputDecoration(
-                hintText: 'Cari',
-                hintStyle: TextStyle(color: AppColors.textHint, fontSize: 14),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ),
+      child: TextField(
+        controller: controller.searchTextController,
+        onSubmitted: (_) => controller.search(),
+        decoration: InputDecoration(
+          hintText: 'Cari Informasi...',
+          hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
+          border: InputBorder.none,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.search, color: AppColors.primary),
+            onPressed: () => controller.search(),
           ),
-          SizedBox(
-            height: 44,
-            child: ElevatedButton(
-              onPressed: () => controller.search(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                elevation: 0,
-              ),
-              child: const Text(
-                'Cari',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

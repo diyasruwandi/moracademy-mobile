@@ -201,6 +201,14 @@ class ApiService extends GetConnect implements GetxService {
   }
 
   // =========================================================================
+  // INFORMASI MAGANG ENDPOINTS (moracademy)
+  // =========================================================================
+
+  Future<Response> getInformasiMagang() async {
+    return await get(ApiEndpoints.informasiMagang);
+  }
+
+  // =========================================================================
   // LOGBOOK ENDPOINTS (moracademy)
   // =========================================================================
 
